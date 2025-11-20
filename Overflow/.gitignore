@@ -1,0 +1,89 @@
+# .NET Aspire .gitignore
+
+# Rider IDE
+.idea/
+*.csproj.iml
+*.iws
+out/
+
+# Visual Studio
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio 2015/2017 cache/options
+.vs/
+*.vs/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# ASP.NET Scaffolding
+ASP.NET/
+AspNetCompiler/
+
+# MSBuild
+*.user.props
+*.user.targets
+
+# NuGet Packages
+*.nuget/packages/
+*.nuget/nuget.exe
+*.nupkg
+
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+
+# VS Code
+.vscode/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# DotCover
+*.dotCover
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# TeamCity
+_TeamCity*
+
+# NCover
+*.ncover*
+CoverageReport*
+
+# DocFX
+_docs/
+
+# Azure Functions
+local.settings.json
+*/bin/
+*/obj/
+
+# Mac
+.DS_Store
+*.DS_Store
+
+# Windows
+Thumbs.db
+
+# .NET Aspire
+**/aspire-manifest.json
