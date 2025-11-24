@@ -1,16 +1,21 @@
 ﻿using System.Security.Claims;
+using Contracts;
+using FastExpressionCompiler;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuestionService.Data;
 using QuestionService.Dtos;
 using QuestionService.Models;
+using QuestionService.Services;
+using Wolverine;
 
 namespace QuestionService.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class QuestionController(QuestionDbContext db) : ControllerBase
+public class QuestionController(IMessageBus bus, QuestionDbContext db, TagService tagService)
+    : ControllerBase
 {
     // Models
     //  |- Question
@@ -37,12 +42,8 @@ public class QuestionController(QuestionDbContext db) : ControllerBase
         [FromBody] QuestionCreateDto questionCreateDto
     )
     {
-        var validTags = await db
-            .Tags.Where(t => questionCreateDto.Tags.Contains(t.Slug))
-            .ToListAsync();
-        var missTags = questionCreateDto.Tags.Except(validTags.Select(t => t.Slug)).ToList();
-        if (missTags.Count != 0)
-            return BadRequest($"未定义标签：{string.Join(", ", missTags)}");
+        if (!await tagService.AreTagsValidAsync(questionCreateDto.Tags))
+            return BadRequest("有未定义标签");
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var name = User.FindFirstValue("name");
@@ -61,6 +62,17 @@ public class QuestionController(QuestionDbContext db) : ControllerBase
 
         db.Questions.Add(question);
         await db.SaveChangesAsync();
+
+        // 发送到总线
+        await bus.PublishAsync(
+            new QuestionCreated(
+                question.Id,
+                question.Title,
+                question.Content,
+                question.CreateAt,
+                question.TagSlugs
+            )
+        );
 
         return Created($"/question/{question.Id}", question);
     }
@@ -105,18 +117,24 @@ public class QuestionController(QuestionDbContext db) : ControllerBase
         if (question.AskerId != userId)
             return Forbid();
 
-        var validTags = await db
-            .Tags.Where(t => questionPutDto.Tags.Contains(t.Slug))
-            .ToListAsync();
-        var missTags = questionPutDto.Tags.Except(validTags.Select(t => t.Slug)).ToList();
-        if (missTags.Count != 0)
-            return BadRequest($"未定义标签：{string.Join(", ", missTags)}");
+        if (!await tagService.AreTagsValidAsync(questionPutDto.Tags))
+            return BadRequest("有未定义标签");
 
         question.Title = questionPutDto.Title;
         question.Content = questionPutDto.Content;
         question.TagSlugs = questionPutDto.Tags;
         question.UpdateAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
+
+        await bus.PublishAsync(
+            new QuestionUpdated(
+                question.Id,
+                question.Title,
+                question.Content,
+                question.TagSlugs.AsArray()
+            )
+        );
+
         return question;
     }
 
@@ -132,6 +150,9 @@ public class QuestionController(QuestionDbContext db) : ControllerBase
             return Forbid();
         db.Questions.Remove(question);
         await db.SaveChangesAsync();
+
+        await bus.PublishAsync(new QuestionDeleted(question.Id));
+
         return NoContent();
     }
 }

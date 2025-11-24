@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using QuestionService.Data;
+using QuestionService.Services;
 using Wolverine;
 using Wolverine.RabbitMQ;
 
@@ -12,6 +13,9 @@ builder.Services.AddOpenApi();
 
 // Extension
 builder.AddServiceDefaults();
+builder.Services.AddMemoryCache();
+
+builder.Services.AddScoped<TagService>();
 
 // Keycloak
 builder
