@@ -1,22 +1,26 @@
 ﻿using System.Text.RegularExpressions;
 using Contracts;
-using SearchService.Models;
+using Contracts.MessageQueue.Post;
+using Contracts.Static.Info;
 using Typesense;
 
 namespace SearchService.MessageHandlers;
 
 public class QuestionUpdatedHandler(ITypesenseClient client)
 {
-    public async Task HandleAsync(QuestionUpdated message)
+    public async Task HandleAsync(PostQuestionMqUpdated message)
     {
-        var doc = new SearchQuestion()
-        {
-            Id = message.QuestionId,
-            Title = message.Title,
-            Content = StripHtml(message.Content),
-            Tags = message.Tags.ToArray(),
-        };
-        await client.UpdateDocument("questions", doc.Id, doc);
+        // 使用匿名更新防止进行值覆盖
+        await client.UpdateDocument(
+            TypesenseSchemaName.PostQuestionSchema,
+            message.Id,
+            new
+            {
+                message.Title,
+                Content = StripHtml(message.Content),
+                Tags = message.Tags.ToArray(),
+            }
+        );
     }
 
     /// <summary>

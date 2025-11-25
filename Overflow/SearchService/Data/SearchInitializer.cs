@@ -1,4 +1,5 @@
-﻿using Typesense;
+using Contracts.Static.Info;
+using Typesense;
 
 namespace SearchService.Data;
 
@@ -7,27 +8,37 @@ namespace SearchService.Data;
 /// </summary>
 public static class SearchInitializer
 {
-    /// <summary>
-    /// 确保指定的索引集合存在，如果不存在则创建新的索引集合
-    /// </summary>
-    /// <param name="client">Typesense客户端实例，用于与搜索服务进行交互</param>
-    /// <returns>表示异步操作的任务</returns>
-    public static async Task EnsureIndexExists(ITypesenseClient client)
+    private static async Task EnsureIndexExists(
+        ITypesenseClient client,
+        string schemaName,
+        Schema schema
+    )
     {
-        const string schemaName = "questions";
-
         try
         {
             await client.RetrieveCollection(schemaName);
             Console.WriteLine($"Collection {schemaName} already exists.");
-            return;
         }
         catch (TypesenseApiNotFoundException e)
         {
             Console.WriteLine($"Collection {schemaName} does not exist.");
-            // 创建索引
-            var schema = new Schema(
-                schemaName,
+            await client.CreateCollection(schema);
+            Console.WriteLine($"Collection {schemaName} created.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public static async Task EnsureIndexExists(ITypesenseClient client)
+    {
+        await EnsureIndexExists(
+            client,
+            TypesenseSchemaName.PostQuestionSchema,
+            new Schema(
+                TypesenseSchemaName.PostQuestionSchema,
                 [
                     new Field("id", FieldType.String),
                     new Field("title", FieldType.String),
@@ -40,15 +51,24 @@ public static class SearchInitializer
             )
             {
                 DefaultSortingField = "createdAt",
-            };
+            }
+        );
 
-            await client.CreateCollection(schema);
-            Console.WriteLine($"Collection {schemaName} created.");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        await EnsureIndexExists(
+            client,
+            TypesenseSchemaName.PostAnswerSchema,
+            new Schema(
+                TypesenseSchemaName.PostAnswerSchema,
+                [
+                    new Field("id", FieldType.String),
+                    new Field("content", FieldType.String),
+                    new Field("createdAt", FieldType.Int64),
+                    new Field("postQuestionId", FieldType.String),
+                ]
+            )
+            {
+                DefaultSortingField = "createdAt",
+            }
+        );
     }
 }

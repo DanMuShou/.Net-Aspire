@@ -2,13 +2,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
-namespace Microsoft.Extensions.Hosting;
+namespace Overflow.ServiceDefaults;
 
 // 添加常见的 Aspire 服务：服务发现、弹性处理、健康检查和 OpenTelemetry。
 // 该工程应当被解决方案中的每个服务项目引用。
@@ -17,11 +17,13 @@ public static class Extensions
 {
     // 健康检查端点路径
     private const string HealthEndpointPath = "/health";
+
     // 存活状态检查端点路径
     private const string AlivenessEndpointPath = "/alive";
 
     // 添加默认的服务配置，包括 OpenTelemetry、健康检查和服务发现等
-    public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
+    public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder)
+        where TBuilder : IHostApplicationBuilder
     {
         builder.ConfigureOpenTelemetry();
 
@@ -59,11 +61,13 @@ public static class Extensions
             logging.IncludeScopes = true;
         });
 
-        builder.Services.AddOpenTelemetry()
+        builder
+            .Services.AddOpenTelemetry()
             .WithMetrics(metrics =>
             {
                 // 添加 ASP.NET Core 指标收集
-                metrics.AddAspNetCoreInstrumentation()
+                metrics
+                    .AddAspNetCoreInstrumentation()
                     // 添加 HTTP 客户端指标收集
                     .AddHttpClientInstrumentation()
                     // 添加运行时指标收集
@@ -72,7 +76,8 @@ public static class Extensions
             .WithTracing(tracing =>
             {
                 // 添加当前应用程序名称作为跟踪源
-                tracing.AddSource(builder.Environment.ApplicationName)
+                tracing
+                    .AddSource(builder.Environment.ApplicationName)
                     // 添加 ASP.NET Core 请求追踪，并排除健康检查请求
                     .AddAspNetCoreInstrumentation(tracing =>
                         tracing.Filter = context =>
@@ -96,7 +101,9 @@ public static class Extensions
         where TBuilder : IHostApplicationBuilder
     {
         // 判断是否启用了 OTLP 导出器
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+        var useOtlpExporter = !string.IsNullOrWhiteSpace(
+            builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
+        );
 
         if (useOtlpExporter)
         {
@@ -118,7 +125,8 @@ public static class Extensions
     public static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
     {
-        builder.Services.AddHealthChecks()
+        builder
+            .Services.AddHealthChecks()
             // 添加一个默认的存活检查以确保应用启动后能响应流量
             .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
 
@@ -136,10 +144,10 @@ public static class Extensions
             app.MapHealthChecks(HealthEndpointPath);
 
             // 只有标记为 "live" 的健康检查必须通过才能认为应用处于活跃状态
-            app.MapHealthChecks(AlivenessEndpointPath, new HealthCheckOptions
-            {
-                Predicate = r => r.Tags.Contains("live")
-            });
+            app.MapHealthChecks(
+                AlivenessEndpointPath,
+                new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") }
+            );
         }
 
         return app;
