@@ -26,7 +26,6 @@ public class AnswerUpdatedHandler(ITypesenseClient client)
             {
                 message.Content,
                 message.IsAccepted,
-                message.PostQuestionId,
             }
         );
     }
