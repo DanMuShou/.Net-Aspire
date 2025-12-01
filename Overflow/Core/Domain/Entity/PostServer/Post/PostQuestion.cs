@@ -9,7 +9,13 @@ namespace Domain.Entity.PostServer.Post;
 /// <param name="content">问题内容</param>
 /// <param name="askerId">提问者ID</param>
 /// <param name="askerDisplayName">提问者显示名称</param>
-public class PostQuestion(string title, string content, string askerId, string askerDisplayName)
+public class PostQuestion(
+    string title,
+    string content,
+    string askerId,
+    string askerDisplayName,
+    List<string> tagSlugs
+)
 {
     /// <summary>
     /// 获取问题的唯一标识符
@@ -64,7 +70,8 @@ public class PostQuestion(string title, string content, string askerId, string a
     /// <summary>
     /// 获取问题关联的标签列表
     /// </summary>
-    public List<string> TagSlugs { get; private set; } = [];
+    public List<string> TagSlugs { get; private set; } =
+        tagSlugs is null ? throw new EntityRuleException("标签列表不能为空") : tagSlugs;
 
     /// <summary>
     /// 获取问题是否有已采纳答案的标志

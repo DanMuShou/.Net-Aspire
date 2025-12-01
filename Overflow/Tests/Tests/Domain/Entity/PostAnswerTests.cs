@@ -1,3 +1,4 @@
+using System;
 using AutoFixture.Xunit2;
 using Domain.Entity;
 using Domain.Entity.PostServer.Post;
@@ -13,7 +14,7 @@ public class PostAnswerTests
         string content,
         string userId,
         string userDisplayName,
-        string postQuestionId
+        Guid postQuestionId
     )
     {
         // Act
@@ -32,74 +33,107 @@ public class PostAnswerTests
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Constructor_WithInvalidContent_ThrowsEntityRuleException(string? content)
+    [InlineAutoData(null)]
+    [InlineAutoData("")]
+    [InlineAutoData("   ")]
+    public void Constructor_WithInvalidContent_ThrowsEntityRuleException(
+        string? content,
+        string userId,
+        string userDisplayName,
+        Guid postQuestionId
+    )
     {
-        // Arrange
-        var userId = "user123";
-        var userDisplayName = "Test User";
-        var postQuestionId = "question123";
-
         // Act & Assert
-        Assert.Throws<EntityRuleException>(() =>
-            new PostAnswer(content!, userId, userDisplayName, postQuestionId)
-        );
+        Action action = () => new PostAnswer(content!, userId, userDisplayName, postQuestionId);
+        Assert.Throws<EntityRuleException>(action);
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Constructor_WithInvalidUserId_ThrowsEntityRuleException(string? userId)
+    [InlineAutoData(null)]
+    [InlineAutoData("")]
+    [InlineAutoData("   ")]
+    public void Constructor_WithInvalidUserId_ThrowsEntityRuleException(
+        string? userId,
+        string content,
+        string userDisplayName,
+        Guid postQuestionId
+    )
     {
-        // Arrange
-        var content = "This is a test answer content";
-        var userDisplayName = "Test User";
-        var postQuestionId = "question123";
-
         // Act & Assert
-        Assert.Throws<EntityRuleException>(() =>
-            new PostAnswer(content, userId!, userDisplayName, postQuestionId)
-        );
+        Action action = () => new PostAnswer(content, userId!, userDisplayName, postQuestionId);
+        Assert.Throws<EntityRuleException>(action);
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
+    [InlineAutoData(null)]
+    [InlineAutoData("")]
+    [InlineAutoData("   ")]
     public void Constructor_WithInvalidUserDisplayName_ThrowsEntityRuleException(
-        string? userDisplayName
+        string? userDisplayName,
+        string content,
+        string userId,
+        Guid postQuestionId
     )
     {
-        // Arrange
-        var content = "This is a test answer content";
-        var userId = "user123";
-        var postQuestionId = "question123";
-
         // Act & Assert
-        Assert.Throws<EntityRuleException>(() =>
-            new PostAnswer(content, userId, userDisplayName!, postQuestionId)
-        );
+        Action action = () => new PostAnswer(content, userId, userDisplayName!, postQuestionId);
+        Assert.Throws<EntityRuleException>(action);
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
+    [InlineAutoData("")]
+    [InlineAutoData("   ")]
     public void Constructor_WithInvalidPostQuestionId_ThrowsEntityRuleException(
-        string? postQuestionId
+        string? postQuestionId,
+        string content,
+        string userId,
+        string userDisplayName
+    )
+    {
+        // Act & Assert
+        Action action = () => new PostAnswer(content, userId, userDisplayName, Guid.Empty);
+        Assert.Throws<EntityRuleException>(action);
+    }
+
+    [Theory]
+    [AutoData]
+    public void Constructor_WithEmptyGuidPostQuestionId_ThrowsEntityRuleException(
+        string content,
+        string userId,
+        string userDisplayName
     )
     {
         // Arrange
-        var content = "This is a test answer content";
-        var userId = "user123";
-        var userDisplayName = "Test User";
+        var postQuestionId = Guid.Empty;
 
         // Act & Assert
-        Assert.Throws<EntityRuleException>(() =>
-            new PostAnswer(content, userId, userDisplayName, postQuestionId!)
-        );
+        Action action = () => new PostAnswer(content, userId, userDisplayName, postQuestionId);
+        Assert.Throws<EntityRuleException>(action);
+    }
+
+    [Theory]
+    [AutoData]
+    public void ChangeAccept_TogglesIsAccepted(
+        string content,
+        string userId,
+        string userDisplayName,
+        Guid postQuestionId
+    )
+    {
+        // Arrange
+        var postAnswer = new PostAnswer(content, userId, userDisplayName, postQuestionId);
+        var initialStatus = postAnswer.IsAccepted;
+
+        // Act
+        postAnswer.ChangeAccept();
+
+        // Assert
+        postAnswer.IsAccepted.Should().Be(!initialStatus);
+
+        // Act again
+        postAnswer.ChangeAccept();
+
+        // Assert
+        postAnswer.IsAccepted.Should().Be(initialStatus);
     }
 }

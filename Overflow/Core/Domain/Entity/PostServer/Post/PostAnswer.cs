@@ -2,12 +2,7 @@
 
 namespace Domain.Entity.PostServer.Post;
 
-public class PostAnswer(
-    string content,
-    string userId,
-    string userDisplayName,
-    string postQuestionId
-)
+public class PostAnswer(string content, string userId, string userDisplayName, Guid postQuestionId)
 {
     public Guid Id { get; private set; } = Guid.CreateVersion7();
 
@@ -31,9 +26,9 @@ public class PostAnswer(
     public bool IsAccepted { get; private set; }
 
     public Guid PostQuestionId { get; private set; } =
-        !string.IsNullOrWhiteSpace(postQuestionId)
-            ? Guid.Parse(postQuestionId)
-            : throw new EntityRuleException("关联的问题ID不能为空");
+        postQuestionId == Guid.Empty
+            ? throw new EntityRuleException("关联的问题ID不能为空")
+            : postQuestionId;
 
     public PostQuestion? PostQuestion { get; private set; } = null;
 

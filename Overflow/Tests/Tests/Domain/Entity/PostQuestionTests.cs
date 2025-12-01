@@ -3,6 +3,7 @@ using AutoFixture.Xunit2;
 using Domain.Entity;
 using Domain.Entity.PostServer.Post;
 using Domain.Exceptions.Rules;
+using System.Collections.Generic;
 
 namespace Tests.Domain.Entity;
 
@@ -14,11 +15,12 @@ public class PostQuestionTests
         string title,
         string content,
         string askerId,
-        string askerDisplayName
+        string askerDisplayName,
+        List<string> tagSlugs
     )
     {
         // Act
-        var postQuestion = new PostQuestion(title, content, askerId, askerDisplayName);
+        var postQuestion = new PostQuestion(title, content, askerId, askerDisplayName, tagSlugs);
 
         // Assert
         postQuestion.Should().NotBeNull();
@@ -30,16 +32,16 @@ public class PostQuestionTests
         postQuestion.CreateAt.Should().NotBe(default(DateTime));
         postQuestion.UpdateAt.Should().BeNull();
         postQuestion.ViewCount.Should().Be(0);
-        postQuestion.TagSlugs.Should().BeEmpty();
+        postQuestion.TagSlugs.Should().BeEquivalentTo(tagSlugs);
         postQuestion.HasAcceptedAnswer.Should().BeFalse();
         postQuestion.Votes.Should().Be(0);
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Constructor_WithInvalidTitle_ThrowsEntityRuleException(string? title)
+    [InlineAutoData(null)]
+    [InlineAutoData("")]
+    [InlineAutoData("   ")]
+    public void Constructor_WithInvalidTitle_ThrowsEntityRuleException(string? title, List<string> tagSlugs)
     {
         // Arrange
         var content = "This is a test question content";
@@ -48,15 +50,15 @@ public class PostQuestionTests
 
         // Act & Assert
         Assert.Throws<EntityRuleException>(() =>
-            new PostQuestion(title!, content, askerId, askerDisplayName)
+            new PostQuestion(title!, content, askerId, askerDisplayName, tagSlugs)
         );
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Constructor_WithInvalidContent_ThrowsEntityRuleException(string? content)
+    [InlineAutoData(null)]
+    [InlineAutoData("")]
+    [InlineAutoData("   ")]
+    public void Constructor_WithInvalidContent_ThrowsEntityRuleException(string? content, List<string> tagSlugs)
     {
         // Arrange
         var title = "Test Question";
@@ -65,15 +67,15 @@ public class PostQuestionTests
 
         // Act & Assert
         Assert.Throws<EntityRuleException>(() =>
-            new PostQuestion(title, content!, askerId, askerDisplayName)
+            new PostQuestion(title, content!, askerId, askerDisplayName, tagSlugs)
         );
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Constructor_WithInvalidAskerId_ThrowsEntityRuleException(string? askerId)
+    [InlineAutoData(null)]
+    [InlineAutoData("")]
+    [InlineAutoData("   ")]
+    public void Constructor_WithInvalidAskerId_ThrowsEntityRuleException(string? askerId, List<string> tagSlugs)
     {
         // Arrange
         var title = "Test Question";
@@ -82,16 +84,17 @@ public class PostQuestionTests
 
         // Act & Assert
         Assert.Throws<EntityRuleException>(() =>
-            new PostQuestion(title, content, askerId!, askerDisplayName)
+            new PostQuestion(title, content, askerId!, askerDisplayName, tagSlugs)
         );
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
+    [InlineAutoData(null)]
+    [InlineAutoData("")]
+    [InlineAutoData("   ")]
     public void Constructor_WithInvalidAskerDisplayName_ThrowsEntityRuleException(
-        string? askerDisplayName
+        string? askerDisplayName,
+        List<string> tagSlugs
     )
     {
         // Arrange
@@ -101,7 +104,7 @@ public class PostQuestionTests
 
         // Act & Assert
         Assert.Throws<EntityRuleException>(() =>
-            new PostQuestion(title, content, askerId, askerDisplayName!)
+            new PostQuestion(title, content, askerId, askerDisplayName!, tagSlugs)
         );
     }
 
@@ -111,11 +114,12 @@ public class PostQuestionTests
         string title,
         string content,
         string askerId,
-        string askerDisplayName
+        string askerDisplayName,
+        List<string> tagSlugs
     )
     {
         // Arrange
-        var postQuestion = new PostQuestion(title, content, askerId, askerDisplayName);
+        var postQuestion = new PostQuestion(title, content, askerId, askerDisplayName, tagSlugs);
         var initialViewCount = postQuestion.ViewCount;
 
         // Act
@@ -131,11 +135,12 @@ public class PostQuestionTests
         string title,
         string content,
         string askerId,
-        string askerDisplayName
+        string askerDisplayName,
+        List<string> tagSlugs
     )
     {
         // Arrange
-        var postQuestion = new PostQuestion(title, content, askerId, askerDisplayName);
+        var postQuestion = new PostQuestion(title, content, askerId, askerDisplayName, tagSlugs);
         var initialStatus = postQuestion.HasAcceptedAnswer;
 
         // Act
@@ -157,11 +162,12 @@ public class PostQuestionTests
         string title,
         string content,
         string askerId,
-        string askerDisplayName
+        string askerDisplayName,
+        List<string> tagSlugs
     )
     {
         // Arrange
-        var postQuestion = new PostQuestion(title, content, askerId, askerDisplayName);
+        var postQuestion = new PostQuestion(title, content, askerId, askerDisplayName, tagSlugs);
         var initialVotes = postQuestion.Votes;
 
         // Act
@@ -177,11 +183,12 @@ public class PostQuestionTests
         string title,
         string content,
         string askerId,
-        string askerDisplayName
+        string askerDisplayName,
+        List<string> tagSlugs
     )
     {
         // Arrange
-        var postQuestion = new PostQuestion(title, content, askerId, askerDisplayName);
+        var postQuestion = new PostQuestion(title, content, askerId, askerDisplayName, tagSlugs);
 
         // Act
         postQuestion.Update();

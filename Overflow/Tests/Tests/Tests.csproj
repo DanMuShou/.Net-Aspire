@@ -19,9 +19,11 @@
     <Using Include="AutoFixture" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Application\Utilities\" />
     <Folder Include="Domain\Entity\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Application\Application.csproj" />
     <ProjectReference Include="..\..\Core\Domain\Domain.csproj" />
   </ItemGroup>
 </Project>
