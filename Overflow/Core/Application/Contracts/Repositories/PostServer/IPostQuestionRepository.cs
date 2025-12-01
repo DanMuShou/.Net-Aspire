@@ -2,4 +2,4 @@
 
 namespace Application.Contracts.Repositories.PostServer;
 
-public interface IPostQuestionRepository : IRepositories<PostQuestion> { }
+public interface IPostQuestionRepository : IRepository<PostQuestion> { }

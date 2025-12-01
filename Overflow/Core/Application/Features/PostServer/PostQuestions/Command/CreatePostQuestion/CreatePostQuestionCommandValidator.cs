@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Application.Features.PostServer.PostQuestion.Command.CreatePostQuestion;
+namespace Application.Features.PostServer.PostQuestions.Command.CreatePostQuestion;
 
 /// <summary>
 /// 创建提问命令的验证器类

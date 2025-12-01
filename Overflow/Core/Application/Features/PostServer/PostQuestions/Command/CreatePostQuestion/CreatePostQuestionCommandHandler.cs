@@ -1,10 +1,10 @@
 ﻿using Application.Contracts.Persistence;
 using Application.Contracts.Repositories.PostServer;
 using Application.Exceptions;
-using Application.Utilities;
 using FluentValidation;
+using MediatR;
 
-namespace Application.Features.PostServer.PostQuestion.Command.CreatePostQuestion;
+namespace Application.Features.PostServer.PostQuestions.Command.CreatePostQuestion;
 
 /// <summary>
 /// 处理创建帖子问题命令的处理器类
@@ -21,23 +21,27 @@ public class CreatePostQuestionCommandHandler(
     /// <summary>
     /// 异步处理创建帖子问题命令
     /// </summary>
-    /// <param name="command">创建帖子问题命令对象，包含帖子的标题、内容、用户信息等</param>
+    /// <param name="request">创建帖子问题命令对象，包含帖子的标题、内容、用户信息等</param>
+    /// <param name="cancellationToken">取消令牌，用于取消异步操作</param>
     /// <returns>返回新创建的帖子问题的唯一标识符(Guid)</returns>
     /// <exception cref="CustomValidationException">当命令验证失败时抛出</exception>
-    public async Task<Guid> Handle(CreatePostQuestionCommand command)
+    public async Task<Guid> Handle(
+        CreatePostQuestionCommand request,
+        CancellationToken cancellationToken
+    )
     {
         // 验证命令参数的有效性
-        var validationResult = await validator.ValidateAsync(command);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
             throw new CustomValidationException(validationResult);
 
         // 创建帖子问题领域实体
         var postQuestion = new Domain.Entity.PostServer.Post.PostQuestion(
-            command.Title,
-            command.Content,
-            command.AskedByUserId,
-            command.AskedByUserDisplayName,
-            command.TagSlugs
+            request.Title,
+            request.Content,
+            request.AskedByUserId,
+            request.AskedByUserDisplayName,
+            request.TagSlugs
         );
 
         try

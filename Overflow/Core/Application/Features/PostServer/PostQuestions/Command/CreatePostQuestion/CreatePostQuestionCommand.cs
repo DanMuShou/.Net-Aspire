@@ -1,6 +1,6 @@
-﻿using Application.Utilities;
+﻿using MediatR;
 
-namespace Application.Features.PostServer.PostQuestion.Command.CreatePostQuestion;
+namespace Application.Features.PostServer.PostQuestions.Command.CreatePostQuestion;
 
 /// <summary>
 /// 创建问题帖子命令记录类，用于封装创建新问题帖子所需的数据
