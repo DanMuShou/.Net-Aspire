@@ -15,8 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-// Extension
-builder.AddServiceDefaults();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<IPostQuestionRepository, PostQuestionRepository>();

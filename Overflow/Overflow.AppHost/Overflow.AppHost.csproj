@@ -13,7 +13,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Overflow.ServiceDefaults\Overflow.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\PostService\PostService.csproj" />
-    <ProjectReference Include="..\SearchService\SearchService.csproj" />
+    <ProjectReference Include="..\PostServer.API\PostServer.API.csproj" />
   </ItemGroup>
 </Project>

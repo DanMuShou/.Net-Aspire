@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 // 注册服务默认配置，包括日志、指标等基础设施。
-builder.AddServiceDefaults();
+// builder.AddServiceDefaults();
 
 #region Typesense
 

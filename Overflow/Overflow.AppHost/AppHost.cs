@@ -35,7 +35,7 @@ var rabbitmq = builder
 // 为 QuestionService 项目添加对 keycloak 服务的引用依赖
 // 配置应用启动顺序，确保 keycloak 服务完全启动后再启动 QuestionService
 var postService = builder
-    .AddProject<PostService>("post-svc")
+    .AddProject<PostServer_API>("post-svc")
     .WithReference(keycloak)
     .WithReference(questionDb)
     .WithReference(rabbitmq)
@@ -43,12 +43,12 @@ var postService = builder
     .WaitFor(questionDb)
     .WaitFor(rabbitmq);
 
-var searchService = builder
-    .AddProject<SearchService>("search-svc")
-    .WithEnvironment("typesense-api-key", typesenseKey)
-    .WithReference(typesenseContainer) // 如何访问
-    .WithReference(rabbitmq)
-    .WaitFor(typesense) // 等待服务
-    .WaitFor(rabbitmq);
+// var searchService = builder
+//     .AddProject<SearchService>("search-svc")
+//     .WithEnvironment("typesense-api-key", typesenseKey)
+//     .WithReference(typesenseContainer) // 如何访问
+//     .WithReference(rabbitmq)
+//     .WaitFor(typesense) // 等待服务
+//     .WaitFor(rabbitmq);
 
 builder.Build().Run();
