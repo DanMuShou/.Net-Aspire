@@ -20,10 +20,6 @@
     <Using Include="AutoFixture" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Application\Features\PostServer\PostQuestions\" />
-    <Folder Include="Application\Features\PostServer\PostQuestions\Command\CreatePostQuestion\" />
-    <Folder Include="Application\Features\PostServer\PostQuestions\Queries\GetPostQuestion\" />
-    <Folder Include="Application\Utilities\" />
     <Folder Include="Domain\Entity\" />
   </ItemGroup>
   <ItemGroup>

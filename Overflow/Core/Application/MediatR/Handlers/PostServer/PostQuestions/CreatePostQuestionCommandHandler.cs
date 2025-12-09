@@ -1,10 +1,12 @@
 ﻿using Application.Contracts.Persistence;
 using Application.Contracts.Repositories.PostServer;
 using Application.Exceptions;
+using Application.MediatR.Commands.PostServer.PostQuestions;
 using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 
-namespace Application.Features.PostServer.PostQuestions.Command.CreatePostQuestion;
+namespace Application.MediatR.Handlers.PostServer.PostQuestions;
 
 /// <summary>
 /// 处理创建帖子问题命令的处理器类
@@ -14,6 +16,7 @@ namespace Application.Features.PostServer.PostQuestions.Command.CreatePostQuesti
 /// <param name="unitOfWork">工作单元模式接口，用于管理事务操作</param>
 public class CreatePostQuestionCommandHandler(
     IPostQuestionRepository repository,
+    IPostTagRepository postTagRepository,
     IValidator<CreatePostQuestionCommand> validator,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreatePostQuestionCommand, Guid>
@@ -30,12 +33,13 @@ public class CreatePostQuestionCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        // 验证命令参数的有效性
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
             throw new CustomValidationException(validationResult);
 
-        // 创建帖子问题领域实体
+        if (!await postTagRepository.AreTagListValidAsync(request.TagSlugs))
+            throw new CustomValidationException("标签列表无效");
+
         var postQuestion = new Domain.Entity.PostServer.Post.PostQuestion(
             request.Title,
             request.Content,
@@ -46,14 +50,12 @@ public class CreatePostQuestionCommandHandler(
 
         try
         {
-            // 执行数据持久化操作并提交事务
             var result = await repository.AddAsync(postQuestion);
             await unitOfWork.CommitAsync();
             return result.Id;
         }
         catch (Exception e)
         {
-            // 发生异常时回滚事务并重新抛出异常
             await unitOfWork.RollbackAsync();
             throw;
         }

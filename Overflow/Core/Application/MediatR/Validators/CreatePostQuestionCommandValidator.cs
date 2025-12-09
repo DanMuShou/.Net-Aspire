@@ -1,6 +1,7 @@
-﻿using FluentValidation;
+﻿using Application.MediatR.Commands.PostServer.PostQuestions;
+using FluentValidation;
 
-namespace Application.Features.PostServer.PostQuestions.Command.CreatePostQuestion;
+namespace Application.MediatR.Validators;
 
 /// <summary>
 /// 创建提问命令的验证器类
@@ -14,19 +15,10 @@ public class CreatePostQuestionCommandValidator : AbstractValidator<CreatePostQu
     /// </summary>
     public CreatePostQuestionCommandValidator()
     {
-        // 验证标题字段不能为空
         RuleFor(x => x.Title).NotEmpty().WithMessage("标题不能为空。");
-
-        // 验证内容字段不能为空
         RuleFor(x => x.Content).NotEmpty().WithMessage("内容不能为空。");
-
-        // 验证提问者ID字段不能为空
         RuleFor(x => x.AskedByUserId).NotEmpty().WithMessage("提问者ID不能为空。");
-
-        // 验证提问者显示名称字段不能为空
         RuleFor(x => x.AskedByUserDisplayName).NotEmpty().WithMessage("提问者显示名称不能为空。");
-
-        // 验证标签列表字段不能为空
         RuleFor(x => x.TagSlugs).NotEmpty().WithMessage("标签列表不能为空。");
     }
 }

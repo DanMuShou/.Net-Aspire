@@ -1,4 +1,4 @@
-﻿using Application.Features.PostServer.PostQuestions.Queries.GetPostQuestion;
+﻿using Application.DTO.PostServer.PostQuestions;
 using Domain.Entity.PostServer.Post;
 using Mapster;
 using MediatR;

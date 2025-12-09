@@ -2,7 +2,7 @@
 
 namespace Persistence.UnitsOfWork;
 
-public class UnitOfWorkEFCore(PostServerDbContext context) : IUnitOfWork
+public class UnitOfWorkEfCore(PostServerDbContext context) : IUnitOfWork
 {
     public async Task CommitAsync()
     {

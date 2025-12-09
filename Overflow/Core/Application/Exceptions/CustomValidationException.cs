@@ -1,9 +1,14 @@
-﻿using FluentValidation.Results;
+using FluentValidation.Results;
 
 namespace Application.Exceptions;
 
-public class CustomValidationException(ValidationResult validationResults) : Exception
+public class CustomValidationException(List<string> validationErrors) : Exception
 {
-    public List<string> ValidationErrors { get; set; } =
-        validationResults.Errors.Select(x => x.ErrorMessage).ToList();
+    public CustomValidationException(string message)
+        : this([message]) { }
+
+    public CustomValidationException(ValidationResult validationResult)
+        : this(validationResult.Errors.Select(x => x.ErrorMessage).ToList()) { }
+
+    public List<string> ValidationErrors { get; private set; } = validationErrors;
 }

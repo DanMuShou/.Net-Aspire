@@ -10,8 +10,7 @@ public static class RegisterPersistenceServices
 {
     public static IServiceCollection AddPersistenceServices(this IServiceCollection services)
     {
-        services.AddScoped<IUnitOfWork, UnitOfWorkEFCore>();
-
+        services.AddScoped<IUnitOfWork, UnitOfWorkEfCore>();
         services.AddScoped<IPostQuestionRepository, PostQuestionRepository>();
         return services;
     }

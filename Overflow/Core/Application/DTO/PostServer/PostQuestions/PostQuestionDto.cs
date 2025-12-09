@@ -1,4 +1,4 @@
-﻿namespace Application.Features.PostServer.PostQuestions.Queries.GetPostQuestion;
+﻿namespace Application.DTO.PostServer.PostQuestions;
 
 public class PostQuestionDto
 {

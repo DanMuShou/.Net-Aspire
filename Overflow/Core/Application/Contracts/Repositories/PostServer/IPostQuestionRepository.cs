@@ -2,4 +2,7 @@
 
 namespace Application.Contracts.Repositories.PostServer;
 
-public interface IPostQuestionRepository : IRepository<PostQuestion> { }
+public interface IPostQuestionRepository : IRepository<PostQuestion>
+{
+    public Task<List<PostQuestion>> GetAllByTag(string? tag);
+}

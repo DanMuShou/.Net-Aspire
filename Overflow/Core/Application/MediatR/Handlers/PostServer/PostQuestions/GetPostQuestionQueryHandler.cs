@@ -1,9 +1,11 @@
 using Application.Contracts.Repositories.PostServer;
+using Application.DTO.PostServer.PostQuestions;
 using Application.Exceptions;
+using Application.MediatR.Queries.PostServer.PostQuestions;
 using Mapster;
 using MediatR;
 
-namespace Application.Features.PostServer.PostQuestions.Queries.GetPostQuestion;
+namespace Application.MediatR.Handlers.PostServer.PostQuestions;
 
 public class GetPostQuestionQueryHandler(IPostQuestionRepository repository)
     : IRequestHandler<GetPostQuestionQuery, PostQuestionDto>
@@ -14,9 +16,6 @@ public class GetPostQuestionQueryHandler(IPostQuestionRepository repository)
     )
     {
         var result = await repository.GetByIdAsync(request.Id);
-        if (result is null)
-            throw new NotFoundException();
-
-        return result.Adapt<PostQuestionDto>();
+        return result is null ? throw new NotFoundException() : result.Adapt<PostQuestionDto>();
     }
 }
