@@ -4,7 +4,9 @@ using Scalar.Aspire;
 var builder = DistributedApplication.CreateBuilder(args);
 
 #region Keycloak
+
 var keycloak = builder.AddKeycloak("keycloak", 6001).WithDataVolume("keycloak-data");
+
 #endregion
 
 #region Postgres
@@ -62,11 +64,30 @@ var searchService = builder
 #region Scalar
 
 var scalar = builder
-    .AddScalarApiReference()
+    .AddScalarApiReference(options =>
+    {
+        options
+            .AddPreferredSecuritySchemes("OAuth2")
+            .AddAuthorizationCodeFlow(
+                "OAuth2",
+                flow =>
+                {
+                    flow.WithClientId("scalar")
+                        .WithAuthorizationUrl(
+                            "http://localhost:6001/realms/overflow/protocol/openid-connect/auth"
+                        )
+                        .WithTokenUrl(
+                            "http://localhost:6001/realms/overflow/protocol/openid-connect/token"
+                        );
+                }
+            );
+    })
     .WithApiReference(postService)
     .WithApiReference(searchService)
+    .WithApiReference(keycloak)
     .WaitFor(postService)
-    .WaitFor(searchService);
+    .WaitFor(searchService)
+    .WaitFor(keycloak);
 
 #endregion
 

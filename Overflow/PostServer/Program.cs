@@ -21,7 +21,7 @@ builder.Services.AddApplicationServices();
 builder
     .Services.AddAuthentication()
     .AddKeycloakJwtBearer(
-        serviceName: "keyclock", // 服务名称
+        serviceName: "keycloak", // 服务名称
         realm: "overflow", // 域名称
         options =>
         {
