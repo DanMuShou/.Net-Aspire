@@ -1,4 +1,5 @@
 using Projects;
+using Scalar.Aspire;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -14,7 +15,8 @@ var postgres = builder
 var questionDb = postgres.AddDatabase("postDb");
 #endregion
 
-#region typesense
+#region Typesense
+
 var typesenseKey = builder.AddParameter("typesense-api-key", secret: true);
 var typesense = builder
     .AddContainer("typesense", "typesense/typesense", "29.0")
@@ -22,20 +24,24 @@ var typesense = builder
     .WithVolume("typesense-data", "/data")
     .WithHttpEndpoint(8108, 8108, "typesense");
 var typesenseContainer = typesense.GetEndpoint("typesense");
+
 #endregion
 
-#region rabbitmq
+#region Rabbitmq
+
 var rabbitmq = builder
     .AddRabbitMQ("messaging")
     .WithDataVolume("rabbitmq-data")
     .WithManagementPlugin(15672); // 作用: 专门为 RabbitMQ 容器启用管理插件界面
 #endregion
 
+#region Server
+
 // 添加一个名为 "question-svc" 的项目引用
 // 为 QuestionService 项目添加对 keycloak 服务的引用依赖
 // 配置应用启动顺序，确保 keycloak 服务完全启动后再启动 QuestionService
 var postService = builder
-    .AddProject<PostServer_API>("post-svc")
+    .AddProject<PostServer>("post-svc")
     .WithReference(keycloak)
     .WithReference(questionDb)
     .WithReference(rabbitmq)
@@ -43,12 +49,25 @@ var postService = builder
     .WaitFor(questionDb)
     .WaitFor(rabbitmq);
 
-// var searchService = builder
-//     .AddProject<SearchService>("search-svc")
-//     .WithEnvironment("typesense-api-key", typesenseKey)
-//     .WithReference(typesenseContainer) // 如何访问
-//     .WithReference(rabbitmq)
-//     .WaitFor(typesense) // 等待服务
-//     .WaitFor(rabbitmq);
+var searchService = builder
+    .AddProject<SearchService>("search-svc")
+    .WithEnvironment("typesense-api-key", typesenseKey)
+    .WithReference(typesenseContainer) // 如何访问
+    .WithReference(rabbitmq)
+    .WaitFor(typesense) // 等待服务
+    .WaitFor(rabbitmq);
+
+#endregion
+
+#region Scalar
+
+var scalar = builder
+    .AddScalarApiReference()
+    .WithApiReference(postService)
+    .WithApiReference(searchService)
+    .WaitFor(postService)
+    .WaitFor(searchService);
+
+#endregion
 
 builder.Build().Run();

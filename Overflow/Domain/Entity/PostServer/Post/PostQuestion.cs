@@ -13,7 +13,6 @@ public class PostQuestion
     /// <param name="title">问题标题</param>
     /// <param name="content">问题内容</param>
     /// <param name="askerId">提问者ID</param>
-    /// <param name="askerDisplayName">提问者显示名称</param>
     /// <param name="tagSlugs">问题标签列表</param>
     /// <exception cref="EntityRuleException">当参数不符合验证规则时抛出</exception>
     public PostQuestion(string title, string content, string askerId, List<string> tagSlugs)
@@ -34,6 +33,7 @@ public class PostQuestion
         CreateAt = DateTime.UtcNow;
         TagSlugs = tagSlugs;
         Votes = 0;
+        AnswerCount = 0;
         HasAcceptedAnswer = false;
     }
 
@@ -97,14 +97,27 @@ public class PostQuestion
     public int Votes { get; private set; }
 
     /// <summary>
+    /// 获取或设置问题关联的答案数量
+    /// </summary>
+    /// <value>问题关联的答案数量</value>
+    public int AnswerCount { get; private set; }
+
+    /// <summary>
     /// 增加问题的浏览次数
     /// </summary>
-    public void View() => ViewCount++;
+    public void AddView() => ViewCount++;
 
     /// <summary>
     /// 增加问题的投票数
     /// </summary>
     public void AddVotes() => Votes++;
+
+    /// <summary>
+    /// 添加问题关联的答案数量
+    /// </summary>
+    public void AddAnswerCount() => AnswerCount++;
+
+    public void RemoveAnswerCount() => AnswerCount = AnswerCount > 0 ? AnswerCount - 1 : 0;
 
     /// <summary>
     /// 更新问题标题
@@ -143,7 +156,7 @@ public class PostQuestion
     /// 更新问题是否有已采纳答案的状态
     /// </summary>
     /// <param name="value">是否有已采纳答案</param>
-    public void UpdateHasAcceptedAnswer(bool value) => HasAcceptedAnswer = value;
+    public void SetHasAcceptedAnswer(bool value) => HasAcceptedAnswer = value;
 
     /// <summary>
     /// 更新问题的最后更新时间

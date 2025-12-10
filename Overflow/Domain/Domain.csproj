@@ -6,7 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Entity\PostServer\" />
-    <Folder Include="Info\Enums\" />
     <Folder Include="ValueObjects\" />
   </ItemGroup>
 </Project>

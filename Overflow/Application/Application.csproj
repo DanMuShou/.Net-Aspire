@@ -10,8 +10,8 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
     <PackageReference Include="Mapster.DependencyInjection" Version="9.0.0-pre01" />
-    <PackageReference Include="MediatR" Version="13.1.0" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
+    <PackageReference Include="MediatR" Version="14.0.0" />
+    <PackageReference Include="WolverineFx.RabbitMQ" Version="5.6.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Features\PostServer\PostQuestions\" />

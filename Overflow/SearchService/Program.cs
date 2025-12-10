@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using Contracts.Static.Info;
+using Application.Contracts.Typesense;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Overflow.ServiceDefaults;
@@ -11,12 +11,8 @@ using Wolverine;
 using Wolverine.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// 添加 OpenAPI 支持（Swagger）。
+builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
-
-// 注册服务默认配置，包括日志、指标等基础设施。
-// builder.AddServiceDefaults();
 
 #region Typesense
 
@@ -65,26 +61,19 @@ builder.Host.UseWolverine(options =>
         "question.search",
         config => config.BindExchange(TypesenseSchemaName.PostQuestionSchema)
     );
-    options.ListenToRabbitQueue(
-        "answer.search",
-        config => config.BindExchange(TypesenseSchemaName.PostAnswerSchema)
-    );
 });
 
 #endregion
 
 var app = builder.Build();
 
-// 在开发环境中映射 OpenAPI 接口文档路由。
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-// 映射默认监控端点（健康检查等）。
 app.MapDefaultEndpoints();
 
-// 提供基于关键词与标签过滤的问题搜索接口。
 app.MapGet(
     "/search",
     async (string query, ITypesenseClient client) =>
@@ -105,7 +94,7 @@ app.MapGet(
 
         try
         {
-            var result = await client.Search<SearchQuestion>(
+            var result = await client.Search<SearchPostQuestion>(
                 TypesenseSchemaName.PostQuestionSchema,
                 searchParameters
             );
@@ -127,35 +116,10 @@ app.MapGet(
 
         try
         {
-            var result = await client.Search<SearchQuestion>(
+            var result = await client.Search<SearchPostQuestion>(
                 TypesenseSchemaName.PostQuestionSchema,
                 searchParams
             );
-            return Results.Ok(result.Hits.Select(hit => hit.Document));
-        }
-        catch (Exception e)
-        {
-            return Results.Problem("Typesense search failed", e.Message);
-        }
-    }
-);
-
-// 提供基于关键词的回答搜索接口。
-app.MapGet(
-    "/search/answers",
-    async (string query, string? questionId, ITypesenseClient client) =>
-    {
-        var searchParameters = new SearchParameters(query, "content");
-
-        // 如果提供了问题ID，则过滤特定问题下的回答
-        if (!string.IsNullOrWhiteSpace(questionId))
-        {
-            searchParameters.FilterBy = $"postQuestionId:={questionId}";
-        }
-
-        try
-        {
-            var result = await client.Search<SearchAnswer>("answers", searchParameters);
             return Results.Ok(result.Hits.Select(hit => hit.Document));
         }
         catch (Exception e)

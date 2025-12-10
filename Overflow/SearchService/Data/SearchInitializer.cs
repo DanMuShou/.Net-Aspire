@@ -1,4 +1,4 @@
-using Contracts.Static.Info;
+using Application.Contracts.Typesense;
 using Typesense;
 
 namespace SearchService.Data;
@@ -19,7 +19,7 @@ public static class SearchInitializer
             await client.RetrieveCollection(schemaName);
             Console.WriteLine($"Collection {schemaName} already exists.");
         }
-        catch (TypesenseApiNotFoundException e)
+        catch (TypesenseApiNotFoundException)
         {
             Console.WriteLine($"Collection {schemaName} does not exist.");
             await client.CreateCollection(schema);
@@ -47,23 +47,6 @@ public static class SearchInitializer
                     new Field("createdAt", FieldType.Int64),
                     new Field("answerCount", FieldType.Int32),
                     new Field("hasAcceptedAnswer", FieldType.Bool),
-                ]
-            )
-            {
-                DefaultSortingField = "createdAt",
-            }
-        );
-
-        await EnsureIndexExists(
-            client,
-            TypesenseSchemaName.PostAnswerSchema,
-            new Schema(
-                TypesenseSchemaName.PostAnswerSchema,
-                [
-                    new Field("id", FieldType.String),
-                    new Field("content", FieldType.String),
-                    new Field("createdAt", FieldType.Int64),
-                    new Field("postQuestionId", FieldType.String),
                 ]
             )
             {

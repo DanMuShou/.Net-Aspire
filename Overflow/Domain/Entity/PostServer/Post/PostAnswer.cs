@@ -55,6 +55,11 @@ public class PostAnswer
     public DateTime CreatedAt { get; private set; }
 
     /// <summary>
+    /// 获取回答更新时间
+    /// </summary>
+    public DateTime UpdatedAt { get; private set; }
+
+    /// <summary>
     /// 获取或设置回答是否被采纳为最佳答案
     /// </summary>
     /// <value>如果回答被采纳为最佳答案则为true，否则为false</value>
@@ -71,6 +76,8 @@ public class PostAnswer
     /// </summary>
     /// <param name="value">是否被采纳为最佳答案</param>
     public void SetAccepted(bool value) => IsAccepted = value;
+
+    public void Update() => UpdatedAt = DateTime.UtcNow;
 
     /// <summary>
     /// 更新回答内容
