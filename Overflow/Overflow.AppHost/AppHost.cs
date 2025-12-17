@@ -1,5 +1,4 @@
 using Projects;
-using Scalar.Aspire;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -61,34 +60,17 @@ var searchService = builder
 
 #endregion
 
-#region Scalar
+#region Yarp
 
-var scalar = builder
-    .AddScalarApiReference(options =>
+var yarp = builder
+    .AddYarp("gateway")
+    .WithConfiguration(yarpBuilder =>
     {
-        options
-            .AddPreferredSecuritySchemes("OAuth2")
-            .AddAuthorizationCodeFlow(
-                "OAuth2",
-                flow =>
-                {
-                    flow.WithClientId("scalar")
-                        .WithAuthorizationUrl(
-                            "http://localhost:6001/realms/overflow/protocol/openid-connect/auth"
-                        )
-                        .WithTokenUrl(
-                            "http://localhost:6001/realms/overflow/protocol/openid-connect/token"
-                        );
-                }
-            );
+        yarpBuilder.AddRoute("/post/{**catch-all}", postService);
+        yarpBuilder.AddRoute("/search/{**catch-all}", searchService);
     })
-    .WithApiReference(postService)
-    .WithApiReference(searchService)
-    .WithApiReference(keycloak)
-    .WaitFor(postService)
-    .WaitFor(searchService)
-    .WaitFor(keycloak);
-
+    .WithEnvironment("ASPNETCORE_URLS", "http://*:8001")
+    .WithEndpoint(8001, 8001, scheme: "http", name: "gateway", isExternal: true); // isExternal: true能在docker外访问
 #endregion
 
 builder.Build().Run();

@@ -41,8 +41,13 @@ public class PostQuestionCreateCommandHandler(
         if (!validationResult.IsValid)
             throw new CustomValidationException(validationResult);
 
-        if (!await postTagRepository.AreTagListValidAsync(request.TagSlugs))
-            throw new CustomValidationException("标签列表无效");
+        var missTags = await postTagRepository.AreTagListValidWithMissingTagsAsync(
+            request.TagSlugs
+        );
+        if (missTags.Count != 0)
+            throw new DataMismatchException(
+                $"标签列表中存在不存在的标签：{string.Join(", ", missTags)}"
+            );
 
         var postQuestion = new PostQuestion(
             request.Title,

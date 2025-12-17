@@ -8,8 +8,11 @@ using MediatR;
 
 namespace Application.MediatR.Handlers.PostServer.PostQuestions;
 
-public class PostQuestionGetQueryHandler(IPostQuestionRepository repository, IUnitOfWork unitOfWork)
-    : IRequestHandler<PostQuestionGetQuery, PostQuestionDto>
+public class PostQuestionGetQueryHandler(
+    IPostQuestionRepository repository,
+    IPostAnswerRepository postAnswerRepository,
+    IUnitOfWork unitOfWork
+) : IRequestHandler<PostQuestionGetQuery, PostQuestionDto>
 {
     public async Task<PostQuestionDto> Handle(
         PostQuestionGetQuery request,
@@ -21,11 +24,15 @@ public class PostQuestionGetQueryHandler(IPostQuestionRepository repository, IUn
             throw new NotFoundException();
 
         result.AddView();
+        var response = result.Adapt<PostQuestionDto>();
+        response.Answers = postAnswerRepository
+            .GetByQuestionIdAsync(request.Id)
+            .Result.Adapt<List<PostAnswerDto>>();
 
         try
         {
             await unitOfWork.CommitAsync();
-            return result.Adapt<PostQuestionDto>();
+            return response;
         }
         catch (Exception)
         {

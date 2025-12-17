@@ -116,17 +116,34 @@ public class PostQuestionController(IMediator mediator) : ControllerBase
     [HttpDelete("{questionId:guid}/answer/{answerId:guid}")]
     public async Task<ActionResult> DeletePostAnswer(Guid questionId, Guid answerId)
     {
-        var command = new PostAnswerDeleteCommand(answerId);
+        var command = new PostAnswerDeleteCommand(answerId, questionId);
         await mediator.Send(command);
         return NoContent();
     }
 
     [Authorize]
-    [HttpGet("{questionId:guid}/answer/{answerId:guid}/accept")]
+    [HttpPost("{questionId:guid}/answer/{answerId:guid}/accept")]
     public async Task<ActionResult> AcceptPostAnswer(Guid questionId, Guid answerId)
     {
         var command = new PostAnswerAcceptCommand(answerId, questionId);
         await mediator.Send(command);
         return NoContent();
+    }
+
+    [HttpGet("errors")]
+    public ActionResult GetErrorResponse(int code)
+    {
+        ModelState.AddModelError("错误1", "验证错误1");
+        ModelState.AddModelError("错误2", "验证错误2");
+
+        return code switch
+        {
+            400 => BadRequest("错误请求"),
+            401 => Unauthorized(),
+            403 => Forbid(),
+            404 => NotFound(),
+            500 => throw new Exception("服务主动错误"),
+            _ => ValidationProblem(ModelState),
+        };
     }
 }

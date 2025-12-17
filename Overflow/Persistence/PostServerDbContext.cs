@@ -1,6 +1,6 @@
 ﻿using Domain.Entity.PostServer.Post;
 using Microsoft.EntityFrameworkCore;
-using Persistence.Configs.PostServers;
+using Persistence.Configs;
 
 namespace Persistence;
 
@@ -17,6 +17,6 @@ public class PostServerDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        PostConfigs.Configure(modelBuilder);
+        PostServerConfigs.Configure(modelBuilder);
     }
 }

@@ -19,8 +19,11 @@ public class PostAnswerDeleteCommandHandler(
             throw new NotFoundException();
 
         var postQuestion = postQuestionRepository.GetByIdAsync(postAnswer.PostQuestionId).Result;
-        if (postQuestion is null)
+        if (postQuestion is null || request.PostQuestionId != postQuestion.Id)
             throw new NotFoundException();
+
+        if (postAnswer.IsAccepted)
+            throw new InvalidOperationException("不能删除已被接受的答案");
 
         postQuestion.RemoveAnswerCount();
 

@@ -11,6 +11,7 @@ namespace Application.MediatR.Handlers.PostServer.PostQuestions;
 
 public class PostQuestionDeleteCommandHandler(
     IPostQuestionRepository repository,
+    IPostAnswerRepository postAnswerRepository,
     IMessageBus messageBus,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<PostQuestionDeleteCommand>
@@ -24,6 +25,7 @@ public class PostQuestionDeleteCommandHandler(
         try
         {
             await repository.DeleteAsync(postQuestion);
+            await postAnswerRepository.DeleteFromQuestionIdAsync(postQuestion.Id);
             await unitOfWork.CommitAsync();
             await messageBus.PublishAsync(postQuestion.Adapt<PostQuestionMqDeleted>());
         }

@@ -1,6 +1,7 @@
 using Application;
 using Application.Contracts.Typesense;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Overflow.ServiceDefaults;
@@ -14,7 +15,57 @@ builder.AddServiceDefaults();
 builder.AddNpgsqlDbContext<PostServerDbContext>("postDb");
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+
+// 替换 AddOpenApi 为完整的 Swagger 配置
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Post Server API", Version = "v1" });
+
+    // 添加 OAuth2 配置
+    options.AddSecurityDefinition(
+        "oauth2",
+        new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.OAuth2,
+            Flows = new OpenApiOAuthFlows
+            {
+                AuthorizationCode = new OpenApiOAuthFlow
+                {
+                    AuthorizationUrl = new Uri(
+                        "http://localhost:6001/realms/overflow/protocol/openid-connect/auth"
+                    ),
+                    TokenUrl = new Uri(
+                        "http://localhost:6001/realms/overflow/protocol/openid-connect/token"
+                    ),
+                    Scopes = new Dictionary<string, string>
+                    {
+                        { "openid", "OpenID" },
+                        { "profile", "Profile" },
+                        { "email", "Email" },
+                    },
+                },
+            },
+        }
+    );
+
+    options.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "oauth2",
+                    },
+                },
+                ["openid", "profile", "email"]
+            },
+        }
+    );
+});
 builder.Services.AddPersistenceServices();
 builder.Services.AddApplicationServices();
 
@@ -50,13 +101,28 @@ builder.Host.UseWolverine(options =>
 
 var app = builder.Build();
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API 文档 v1");
+        c.RoutePrefix = string.Empty; // 设置为根路径
+
+        // 配置 OAuth2
+        c.OAuthClientId("swagger");
+        c.OAuthClientSecret("");
+        c.OAuthUsePkce();
+        c.OAuthScopeSeparator(" ");
+    });
 }
 
 app.MapControllers();
-app.UseHttpsRedirection();
 app.UseErrorHandleMiddleware();
 
 using var scope = app.Services.CreateScope();

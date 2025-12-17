@@ -38,6 +38,10 @@ public class ErrorHandleMiddleware(RequestDelegate next)
                 httpStatusCode = HttpStatusCode.BadRequest;
                 result = JsonSerializer.Serialize(dataMismatchException.Message);
                 break;
+            case InvalidOperationException invalidOperationException:
+                httpStatusCode = HttpStatusCode.BadRequest;
+                result = JsonSerializer.Serialize(invalidOperationException.Message);
+                break;
         }
 
         context.Response.StatusCode = (int)httpStatusCode;

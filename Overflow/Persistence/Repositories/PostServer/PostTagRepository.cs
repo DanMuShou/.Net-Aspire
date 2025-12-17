@@ -9,14 +9,14 @@ public class PostTagRepository(PostServerDbContext context)
 {
     private readonly PostServerDbContext _context = context;
 
-    public Task<bool> AreTagListValidAsync(List<string> tagSlugs)
+    public Task<List<string>> AreTagListValidWithMissingTagsAsync(List<string> tagSlugs)
     {
-        return Task.FromResult(
-            tagSlugs.All(tagSlug =>
-                _context
-                    .Set<PostTag>()
-                    .Any(tag => tag.Slug.Equals(tagSlug, StringComparison.OrdinalIgnoreCase))
-            )
-        );
+        var validTagSlugs = _context
+            .Set<PostTag>()
+            .Where(tag => tagSlugs.Contains(tag.Slug))
+            .Select(tag => tag.Slug)
+            .ToList();
+        var missingTagSlugs = tagSlugs.Except(validTagSlugs).ToList();
+        return Task.FromResult(missingTagSlugs);
     }
 }
