@@ -1,3 +1,4 @@
+using Application.Common.Response;
 using Application.Contracts.Persistence;
 using Application.Contracts.Repositories.PostServer;
 using Application.DTO.PostServer.PostQuestions;
@@ -12,18 +13,16 @@ public class PostQuestionGetQueryHandler(
     IPostQuestionRepository repository,
     IPostAnswerRepository postAnswerRepository,
     IUnitOfWork unitOfWork
-) : IRequestHandler<PostQuestionGetQuery, PostQuestionDto>
+) : IRequestHandler<PostQuestionGetQuery, ServiceResponse<PostQuestionDto>>
 {
-    public async Task<PostQuestionDto> Handle(
+    public async Task<ServiceResponse<PostQuestionDto>> Handle(
         PostQuestionGetQuery request,
         CancellationToken cancellationToken
     )
     {
-        var result = await repository.GetByIdAsync(request.Id);
-        if (result is null)
-            throw new NotFoundException();
-
+        var result = await repository.GetByIdAsync(request.Id) ?? throw new NotFoundException();
         result.AddView();
+
         var response = result.Adapt<PostQuestionDto>();
         response.Answers = postAnswerRepository
             .GetByQuestionIdAsync(request.Id)
@@ -32,7 +31,7 @@ public class PostQuestionGetQueryHandler(
         try
         {
             await unitOfWork.CommitAsync();
-            return response;
+            return ServiceResponse<PostQuestionDto>.ReturnResultWith200(response);
         }
         catch (Exception)
         {

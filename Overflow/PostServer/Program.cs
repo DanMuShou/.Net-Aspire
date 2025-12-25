@@ -1,12 +1,12 @@
 using Application;
 using Application.Common.Extensions;
+using Application.Common.Middlewares;
 using Application.Common.Typesense;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Overflow.ServiceDefaults;
 using Persistence;
-using PostServer.Middlewares;
 using Wolverine;
 using Wolverine.RabbitMQ;
 
