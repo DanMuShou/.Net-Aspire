@@ -1,8 +1,10 @@
 using Application;
-using Application.Contracts.Typesense;
+using Application.Common.Extensions;
+using Application.Common.Typesense;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Overflow.ServiceDefaults;
 using Persistence;
 using PostServer.Middlewares;
 using Wolverine;
@@ -13,11 +15,8 @@ builder.AddServiceDefaults();
 builder.AddNpgsqlDbContext<PostServerDbContext>("postDb");
 
 builder.Services.AddControllers();
-
-// 替换 AddOpenApi 为完整的 Swagger 配置
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddPersistenceServices();
 builder.Services.AddApplicationServices();
+builder.Services.AddPersistenceServices();
 
 builder
     .Services.AddAuthentication()
@@ -31,22 +30,10 @@ builder
         }
     );
 
-builder
-    .Services.AddOpenTelemetry()
-    .WithTracing(providerBuilder =>
-    {
-        providerBuilder
-            .SetResourceBuilder(
-                ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName)
-            )
-            .AddSource("Wolverine");
-    });
-
-builder.Host.UseWolverine(options =>
+await builder.UseWolverineWithRabbitMqAsync(options =>
 {
-    // 自动创建所需的 RabbitMQ 资源.
-    options.UseRabbitMqUsingNamedConnection("messaging").AutoProvision();
     options.PublishAllMessages().ToRabbitExchange(TypesenseSchemaName.PostQuestionSchema);
+    options.ApplicationAssembly = typeof(Program).Assembly;
 });
 
 var app = builder.Build();

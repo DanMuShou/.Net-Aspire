@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
-using Application.Contracts.Queues.Post;
-using Application.Contracts.Typesense;
+using Application.Common.Queues.Post;
+using Application.Common.Typesense;
 using SearchService.Models;
 using Typesense;
 

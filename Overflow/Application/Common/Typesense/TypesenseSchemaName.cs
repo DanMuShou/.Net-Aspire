@@ -1,4 +1,4 @@
-namespace Application.Contracts.Typesense;
+namespace Application.Common.Typesense;
 
 public static class TypesenseSchemaName
 {

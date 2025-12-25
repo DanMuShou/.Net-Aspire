@@ -1,4 +1,4 @@
-using Application.Contracts.Typesense;
+using Application.Common.Typesense;
 using Typesense;
 
 namespace SearchService.Data;

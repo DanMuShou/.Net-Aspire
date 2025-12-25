@@ -1,4 +1,4 @@
-﻿namespace Application.Contracts.Queues.Post;
+﻿namespace Application.Common.Queues.Post;
 
 // 传递给问题服务总线的消息
 public record PostQuestionMqCreated(

@@ -1,5 +1,5 @@
-﻿using Application.Contracts.Persistence;
-using Application.Contracts.Queues.Post;
+﻿using Application.Common.Queues.Post;
+using Application.Contracts.Persistence;
 using Application.Contracts.Repositories.PostServer;
 using Application.Exceptions;
 using Application.MediatR.Commands.PostServer.PostQuestions;

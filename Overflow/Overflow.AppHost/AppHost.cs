@@ -15,11 +15,10 @@ var compose = builder
 var keycloak = builder
     .AddKeycloak("keycloak", 6001)
     .WithDataVolume("keycloak-data")
-    .WithoutHttpsCertificate();
-//.WithRealmImport(@"../infra/realms")
-//.WithEnvironment("KC_HTTP_ENABLED", "true")
-//.WithEnvironment("KC_HOSTNAME_STRICT", "false")
-//.WithEndpoint(6001, 8080, "keycloak", isExternal: true);
+    .WithoutHttpsCertificate()
+    .WithEnvironment("KC_HTTP_ENABLED", "true")
+    .WithEnvironment("KC_HOSTNAME_STRICT", "false")
+    .WithEndpoint(6001, 8080, "keycloak", isExternal: true);
 #pragma warning restore ASPIRECERTIFICATES001 // 类型仅用于评估，在将来的更新中可能会被更改或删除。取消此诊断以继续。
 
 #endregion
@@ -82,19 +81,23 @@ var searchService = builder
 
 #region Yarp
 
+#pragma warning disable ASPIRECERTIFICATES001 // 类型仅用于评估，在将来的更新中可能会被更改或删除。取消此诊断以继续。
 var yarp = builder
     .AddYarp("gateway")
     .WithConfiguration(yarpBuilder =>
     {
         yarpBuilder.AddRoute("/tag/{**catch-all}", postService);
         yarpBuilder
-            .AddRoute("/question/{**catch-all}", postService)
-            .WithTransformPathRemovePrefix("/question")
+            .AddRoute("/postquestion/{**catch-all}", postService)
+            .WithTransformPathRemovePrefix("/postquestion")
             .WithTransformPathPrefix("/api/PostQuestion");
         yarpBuilder.AddRoute("/search/{**catch-all}", searchService);
     })
     .WithEnvironment("ASPNETCORE_URLS", "http://*:8001")
-    .WithEndpoint(8001, 8001, scheme: "http", name: "gateway", isExternal: true); // isExternal: true能在docker外访问
+    .WithEndpoint(port: 8001, scheme: "http", targetPort: 8001, name: "gateway", isExternal: true)
+    .WithoutHttpsCertificate();
+#pragma warning restore ASPIRECERTIFICATES001 // 类型仅用于评估，在将来的更新中可能会被更改或删除。取消此诊断以继续。
+
 #endregion
 
 builder.Build().Run();

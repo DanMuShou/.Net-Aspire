@@ -1,3 +1,3 @@
-﻿namespace Application.Contracts.Queues.Post;
+﻿namespace Application.Common.Queues.Post;
 
 public record PostQuestionMqAnswerAccepted(Guid Id, bool HasAcceptedAnswer);
