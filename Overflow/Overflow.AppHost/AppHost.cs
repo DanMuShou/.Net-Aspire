@@ -97,4 +97,13 @@ var yarp = builder
     .WithEndpoint(8001, 8001, scheme: "http", name: "gateway", isExternal: true); // isExternal: true能在docker外访问
 #endregion
 
+#region Web
+
+var webApp = builder
+    .AddNpmApp("webapp", "../WebApp", "dev")
+    .WithReference(keycloak)
+    .WithHttpEndpoint(env: "PORT", port: 3000);
+
+#endregion
+
 builder.Build().Run();
