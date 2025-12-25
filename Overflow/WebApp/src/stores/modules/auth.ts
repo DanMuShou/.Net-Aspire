@@ -7,16 +7,12 @@ import type { User } from '@/api/modules/user'
 export const useAuthStore = defineStore(
   'auth',
   () => {
-    // 状态
     const user = ref<User | null>(null)
-    const token = ref<string | null>(localStorage.getItem('access_token'))
-    const refreshToken = ref<string | null>(localStorage.getItem('refresh_token'))
+    const token = ref<string | null>(null)
+    const refreshToken = ref<string | null>(null)
 
-    // 计算属性
     const isAuthenticated = computed(() => !!token.value)
     const hasRole = (role: string) => {
-      // 这里可以根据实际需求实现角色检查逻辑
-      // 示例中我们暂时返回true，实际应用中应该根据用户角色进行判断
       return true
     }
 
@@ -25,10 +21,9 @@ export const useAuthStore = defineStore(
       try {
         const response = await userApi.login(credentials)
         token.value = response.token
-        localStorage.setItem('access_token', response.token)
         return response
       } catch (error) {
-        console.error('Login failed:', error)
+        console.error('登录失败: ', error)
         throw error
       }
     }
@@ -37,14 +32,11 @@ export const useAuthStore = defineStore(
       try {
         await userApi.logout()
       } catch (error) {
-        console.error('Logout failed:', error)
+        console.error('退出失败: ', error)
       } finally {
         token.value = null
         refreshToken.value = null
         user.value = null
-        localStorage.removeItem('access_token')
-        localStorage.removeItem('refresh_token')
-        localStorage.removeItem('user_info')
       }
     }
 
@@ -52,11 +44,21 @@ export const useAuthStore = defineStore(
       try {
         const userInfo = await userApi.getUserInfo()
         user.value = userInfo
-        localStorage.setItem('user_info', JSON.stringify(userInfo))
         return userInfo
       } catch (error) {
-        console.error('Failed to fetch user info:', error)
+        console.error('获得用户信息失败: ', error)
         throw error
+      }
+    }
+    
+    const init = async () => {
+      if (token.value) {
+        try {
+          await fetchUserInfo()
+        } catch (error) {
+          console.warn('Token 可能已失效，执行登出操作')
+          await logout()
+        }
       }
     }
 
@@ -69,13 +71,14 @@ export const useAuthStore = defineStore(
       login,
       logout,
       fetchUserInfo,
+      init,
     }
   },
   {
     persist: {
-      key: 'auth-store',
+      key: 'auth',
       storage: localStorage,
-      paths: ['token', 'refreshToken'],
-    },
+      pick: ['token', 'refreshToken']
+    }
   }
 )

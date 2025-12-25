@@ -1,114 +1,77 @@
 <template>
-  <div class="main-layout">
-    <header class="main-header">
-      <div class="container">
-        <h1 class="logo">Overflow</h1>
-        <nav class="main-nav">
-          <RouterLink to="/">首页</RouterLink>
-          <RouterLink to="/posts">帖子</RouterLink>
-          <RouterLink to="/about">关于</RouterLink>
-        </nav>
-        <div class="auth-section">
-          <template v-if="$store?.auth?.isAuthenticated">
-            <RouterLink to="/profile">个人资料</RouterLink>
-            <button @click="$store?.auth?.logout()" class="logout-btn">退出</button>
-          </template>
-          <template v-else>
-            <RouterLink to="/login">登录</RouterLink>
-          </template>
-        </div>
-      </div>
-    </header>
+  <v-app>
+    <v-app-bar>
+      <v-app-bar-title>Title</v-app-bar-title>
 
-    <main class="main-content">
-      <slot />
-    </main>
+      <v-spacer></v-spacer>
 
-    <footer class="main-footer">
-      <div class="container">
-        <p>&copy; 2025 Overflow. All rights reserved.</p>
+      <div v-if="!authStore.isAuthenticated" class="d-flex align-center">
+        <v-btn color="primary" variant="outlined" @click="login">登录</v-btn>
       </div>
-    </footer>
-  </div>
+      <div v-else class="d-flex align-center">
+        <v-menu offset-y>
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" icon>
+              <v-avatar size="40" color="teal" class="text-white">
+                {{ getUserInitials }}
+              </v-avatar>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item>
+              <v-list-item-title>{{ authStore.user?.name || authStore.user?.username }}</v-list-item-title>
+              <v-list-item-subtitle>{{ authStore.user?.email }}</v-list-item-subtitle>
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item @click="logout">
+              <v-list-item-title>退出登录</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+    </v-app-bar>
+
+    <v-main>
+      <v-container fluid>
+        <v-row dense>
+          <v-col v-for="n in 4" :key="n" cols="12">
+            <v-card
+              :subtitle="`Subtitle for Content ${n}`"
+              :title="`Content ${n}`"
+              text="Lorem ipsum dolor sit amet consectetur, adipisicing elit.?"
+            ></v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script setup lang="ts">
-// 这里可以添加布局相关的逻辑
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const getUserInitials = computed(() => {
+  if (authStore.user?.name) {
+    return authStore.user.name.charAt(0).toUpperCase()
+  } else if (authStore.user?.username) {
+    return authStore.user.username.charAt(0).toUpperCase()
+  }
+  return '?'
+})
+
+const login = () => {
+  router.push('/login')
+}
+
+const logout = () => {
+  authStore.logout()
+  router.push('/login')
+}
 </script>
 
-<style scoped>
-.main-layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.main-header {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  padding: 1rem 0;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #3498db;
-  margin: 0;
-}
-
-.main-nav {
-  display: flex;
-  gap: 2rem;
-}
-
-.main-nav a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-}
-
-.main-nav a.router-link-active {
-  color: #3498db;
-}
-
-.auth-section {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.logout-btn {
-  padding: 0.25rem 0.5rem;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.main-content {
-  flex: 1;
-  padding: 2rem 0;
-}
-
-.main-footer {
-  background-color: #f5f5f5;
-  padding: 1rem 0;
-  margin-top: auto;
-}
-
-.main-footer p {
-  margin: 0;
-  text-align: center;
-  color: #666;
-}
-</style>
+<style></style>

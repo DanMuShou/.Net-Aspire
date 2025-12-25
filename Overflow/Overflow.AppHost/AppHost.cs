@@ -103,7 +103,7 @@ var yarp = builder
 #region Web
 
 var webApp = builder
-    .AddNpmApp("webapp", "../WebApp", "dev")
+    .AddJavaScriptApp("webapp", "../WebApp")
     .WithReference(keycloak)
     .WithHttpEndpoint(env: "PORT", port: 3000);
 

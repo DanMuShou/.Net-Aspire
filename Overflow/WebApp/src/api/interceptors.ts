@@ -2,7 +2,6 @@
 import { useAuthStore } from '@/stores'
 
 export const requestInterceptor = (config: any) => {
-  // 在发送请求之前做些什么
   const authStore = useAuthStore()
   if (authStore.token) {
     config.headers.Authorization = `Bearer ${authStore.token}`
