@@ -1,132 +1,133 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-import { useAuthStore } from '@/stores'
-
-const authStore = useAuthStore()
-const username = ref('')
-const password = ref('')
-const loading = ref(false)
-const error = ref('')
-
-const handleLogin = async () => {
-  if (!username.value || !password.value) {
-    error.value = '请输入用户名和密码'
-    return
-  }
-
-  loading.value = true
-  error.value = ''
-
-  try {
-    await authStore.login({ username: username.value, password: password.value })
-    // 登录成功后的处理
-    window.location.href = '/'
-  } catch (err) {
-    error.value = '登录失败，请检查用户名和密码'
-    console.error('Login error:', err)
-  } finally {
-    loading.value = false
-  }
-}
-</script>
-
 <template>
-  <div class="login-page">
-    <div class="login-form">
-      <h2>用户登录</h2>
-      
-      <form @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label for="username">用户名</label>
-          <input 
-            id="username" 
-            v-model="username" 
-            type="text" 
-            placeholder="请输入用户名" 
-            required
-          />
-        </div>
-        
-        <div class="form-group">
-          <label for="password">密码</label>
-          <input 
-            id="password" 
-            v-model="password" 
-            type="password" 
-            placeholder="请输入密码" 
-            required
-          />
-        </div>
-        
-        <div v-if="error" class="error">{{ error }}</div>
-        
-        <button 
-          type="submit" 
-          :disabled="loading" 
-          class="login-btn"
-        >
-          {{ loading ? '登录中...' : '登录' }}
-        </button>
-      </form>
-    </div>
-  </div>
+	<v-container class="fill-height">
+		<v-card class="fill-height fill-width" justify="center" align="center">
+			<v-card-title class="text-center text-h5 pb-6"> 用户登录 </v-card-title>
+
+			<v-card-text>
+				<form @submit.prevent="handleLogin">
+					<v-text-field
+						v-model="formData.email"
+						label="邮箱"
+						type="email"
+						:error="!emailValidation.isValid"
+						:error-messages="emailErrorMessage"
+						required
+						variant="outlined"
+						class="mb-4"
+						@blur="validateEmailField" />
+
+					<v-text-field
+						v-model="formData.password"
+						label="密码"
+						type="password"
+						:error="!passwordValidation.isValid"
+						:error-messages="passwordErrorMessage"
+						required
+						variant="outlined"
+						class="mb-4"
+						@blur="validatePasswordField" />
+
+					<v-btn
+						type="submit"
+						color="primary"
+						block
+						size="large"
+						:loading="isSubmitting"
+						:disabled="!emailValidation.isValid || !passwordValidation.isValid">
+						{{ isSubmitting ? '登录中...' : '登录' }}
+					</v-btn>
+				</form>
+			</v-card-text>
+
+			<v-card-actions class="justify-center pt-4">
+				<v-btn to="/register" variant="text" color="primary">
+					还没有账号？立即注册
+				</v-btn>
+			</v-card-actions>
+		</v-card>
+	</v-container>
 </template>
 
-<style scoped>
-.login-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-  background-color: #f5f5f5;
+<script setup lang="ts">
+import { ref, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import {
+	validateEmail,
+	validatePassword,
+	type EmailValidationResult,
+	type PasswordValidationResult,
+} from '@/utils/validators'
+
+interface LoginForm {
+	email: string
+	password: string
 }
 
-.login-form {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
+const router = useRouter()
+const formData = reactive<LoginForm>({
+	email: '',
+	password: '',
+})
+
+const emailValidation = ref<EmailValidationResult>({ isValid: true })
+const passwordValidation = ref<PasswordValidationResult>({ isValid: true })
+const isSubmitting = ref(false)
+
+// 计算属性用于错误消息
+const emailErrorMessage = computed(() => {
+	return emailValidation.value.isValid
+		? []
+		: [emailValidation.value.error || '邮箱格式不正确']
+})
+
+const passwordErrorMessage = computed(() => {
+	return passwordValidation.value.isValid
+		? []
+		: [passwordValidation.value.error || '密码格式不正确']
+})
+
+// 实时验证邮箱
+const validateEmailField = () => {
+	emailValidation.value = validateEmail(formData.email)
 }
 
-.form-group {
-  margin-bottom: 1rem;
+// 实时验证密码
+const validatePasswordField = () => {
+	passwordValidation.value = validatePassword(formData.password, 6) // 设置最小长度为6
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
+// 验证整个表单
+const validateForm = (): boolean => {
+	validateEmailField()
+	validatePasswordField()
+
+	return emailValidation.value.isValid && passwordValidation.value.isValid
 }
 
-.form-group input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-}
+const handleLogin = async () => {
+	if (!validateForm()) {
+		return
+	}
 
-.error {
-  color: #e74c3c;
-  margin-bottom: 1rem;
-}
+	isSubmitting.value = true
 
-.login-btn {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-}
+	try {
+		// 这里应该是实际的登录逻辑
+		console.log('登录数据:', {
+			email: formData.email,
+			password: formData.password,
+		})
 
-.login-btn:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
+		// 模拟 API 调用
+		await new Promise(resolve => setTimeout(resolve, 1000))
+
+		// 登录成功后跳转
+		router.push('/dashboard') // 或其他默认页面
+	} catch (error) {
+		console.error('登录失败:', error)
+		// 这里可以显示错误消息给用户
+	} finally {
+		isSubmitting.value = false
+	}
 }
-</style>
+</script>

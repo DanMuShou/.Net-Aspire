@@ -57,11 +57,9 @@ declare global {
   const resolveComponent: typeof import('vue').resolveComponent
   const setActivePinia: typeof import('pinia').setActivePinia
   const setMapStoreSuffix: typeof import('pinia').setMapStoreSuffix
-  const setupStore: typeof import('./src/stores/index').setupStore
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
   const shallowRef: typeof import('vue').shallowRef
-  const store: typeof import('./src/stores/index').store
   const storeToRefs: typeof import('pinia').storeToRefs
   const toRaw: typeof import('vue').toRaw
   const toRef: typeof import('vue').toRef
@@ -69,11 +67,7 @@ declare global {
   const toValue: typeof import('vue').toValue
   const triggerRef: typeof import('vue').triggerRef
   const unref: typeof import('vue').unref
-  const useApi: typeof import('./src/composables/useApi').useApi
   const useAttrs: typeof import('vue').useAttrs
-  const useAuthStore: typeof import('./src/stores/modules/auth').useAuthStore
-  const useCommonStore: typeof import('./src/stores/modules/common').useCommonStore
-  const useCounterStore: typeof import('./src/stores/counter').useCounterStore
   const useCssModule: typeof import('vue').useCssModule
   const useCssVars: typeof import('vue').useCssVars
   const useId: typeof import('vue').useId

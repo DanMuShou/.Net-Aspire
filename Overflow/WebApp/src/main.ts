@@ -1,13 +1,13 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import './assets/main.css'
+import { registerPlugins } from './plugins'
 
-import { setupPlugins } from './plugins'
-import { setupStore } from './stores'
+import App from './App.vue'
+
+import { createApp } from 'vue'
+
+import 'unfonts.css'
 
 const app = createApp(App)
 
-setupPlugins(app)
-setupStore(app)
+registerPlugins(app)
 
 app.mount('#app')
