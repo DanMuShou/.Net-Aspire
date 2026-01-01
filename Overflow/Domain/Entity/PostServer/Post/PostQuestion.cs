@@ -161,7 +161,7 @@ public class PostQuestion
     /// <summary>
     /// 更新问题的最后更新时间
     /// </summary>
-    public void Update() => UpdateAt = DateTime.UtcNow;
+    public void UpdateTime() => UpdateAt = DateTime.UtcNow;
 
     /// <summary>
     /// 验证问题标题

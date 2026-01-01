@@ -1,8 +1,11 @@
 ﻿using Application.Common.Queues.Post;
+using Application.Common.Response;
 using Application.Contracts.Persistence;
 using Application.Contracts.Repositories.PostServer;
+using Application.DTO.PostServer.PostQuestions;
 using Application.Exceptions;
 using Application.MediatR.Commands.PostServer.PostQuestions;
+using Application.Static.Messages;
 using Domain.Entity.PostServer.Post;
 using FluentValidation;
 using Mapster;
@@ -23,7 +26,7 @@ public class PostQuestionCreateCommandHandler(
     IValidator<PostQuestionCreateCommand> validator,
     IMessageBus messageBus,
     IUnitOfWork unitOfWork
-) : IRequestHandler<PostQuestionCreateCommand, Guid>
+) : IRequestHandler<PostQuestionCreateCommand, ServiceResponse<PostQuestionDto>>
 {
     /// <summary>
     /// 异步处理创建帖子问题命令
@@ -32,7 +35,7 @@ public class PostQuestionCreateCommandHandler(
     /// <param name="cancellationToken">取消令牌，用于取消异步操作</param>
     /// <returns>返回新创建的帖子问题的唯一标识符(Guid)</returns>
     /// <exception cref="CustomValidationException">当命令验证失败时抛出</exception>
-    public async Task<Guid> Handle(
+    public async Task<ServiceResponse<PostQuestionDto>> Handle(
         PostQuestionCreateCommand request,
         CancellationToken cancellationToken
     )
@@ -61,7 +64,9 @@ public class PostQuestionCreateCommandHandler(
             var result = await repository.AddAsync(postQuestion);
             await unitOfWork.CommitAsync();
             await messageBus.PublishAsync(result.Adapt<PostQuestionMqCreated>());
-            return result.Id;
+            return ServiceResponse<PostQuestionDto>.ReturnResultWith201(
+                result.Adapt<PostQuestionDto>()
+            );
         }
         catch (Exception)
         {

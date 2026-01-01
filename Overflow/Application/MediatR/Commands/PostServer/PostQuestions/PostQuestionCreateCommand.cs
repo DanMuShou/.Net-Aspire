@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using Application.Common.Response;
+using Application.DTO.PostServer.PostQuestions;
+using MediatR;
 
 namespace Application.MediatR.Commands.PostServer.PostQuestions;
 
@@ -14,4 +16,4 @@ public record PostQuestionCreateCommand(
     string Content,
     string AskedByUserId,
     List<string> TagSlugs
-) : IRequest<Guid>;
+) : IRequest<ServiceResponse<PostQuestionDto>>;

@@ -3,8 +3,10 @@ using Application.Contracts.Persistence;
 using Application.Contracts.Repositories.PostServer;
 using Application.Exceptions;
 using Application.MediatR.Commands.PostServer.PostQuestions;
+using Application.Static.Messages;
 using Mapster;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Wolverine;
 
 namespace Application.MediatR.Handlers.PostServer.PostQuestions;
@@ -19,6 +21,7 @@ public class PostAnswerAcceptCommandHandler(
     public async Task Handle(PostAnswerAcceptCommand request, CancellationToken cancellationToken)
     {
         var postAnswer = postAnswerRepository.GetByIdAsync(request.PostAnswerId).Result;
+
         if (postAnswer is null)
             throw new NotFoundException();
 

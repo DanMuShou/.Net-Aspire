@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Application.Common.Response;
 using Application.DTO.PostServer.PostQuestions;
 using Application.MediatR.Commands.PostServer.PostQuestions;
 using Application.MediatR.Queries.PostServer.PostQuestions;
@@ -15,9 +16,7 @@ public class PostQuestionController(IMediator mediator) : ControllerBase
 {
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<PostQuestionDto>> CreatePostQuestion(
-        [FromBody] CreatePostQuestionDto questionDto
-    )
+    public async Task<ActionResult> CreatePostQuestion([FromBody] CreatePostQuestionDto questionDto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var name = User.FindFirstValue("name");
@@ -33,20 +32,20 @@ public class PostQuestionController(IMediator mediator) : ControllerBase
         );
         var result = await mediator.Send(command);
 
-        return Created($"/question/{result}", result);
+        return CreatedAtAction(nameof(GetPostQuestion), new { id = result.Data }, result.Data);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<PostQuestionDto>> GetPostQuestion(Guid id)
+    [HttpGet("{id:guid}", Name = nameof(GetPostQuestion))]
+    public async Task<ActionResult<ServiceResponse<PostQuestionDto>>> GetPostQuestion(Guid id)
     {
         var query = new PostQuestionGetQuery(id);
         var result = await mediator.Send(query);
-        return result;
+        return Ok(result);
     }
 
     [Authorize]
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult> UpdatePostQuestion(
+    public async Task<ActionResult<ServiceResponse<PostQuestionDto>>> UpdatePostQuestion(
         Guid id,
         [FromBody] UpdatePostQuestionDto questionDto
     )
@@ -59,8 +58,8 @@ public class PostQuestionController(IMediator mediator) : ControllerBase
             questionDto.HasAcceptedAnswer
         );
 
-        await mediator.Send(command);
-        return NoContent();
+        var result = await mediator.Send(command);
+        return Ok(result);
     }
 
     [Authorize]
