@@ -1,104 +1,101 @@
 <template>
-	<v-container>
-		<v-card justify="center" align="center" flat>
-			<v-card-title class="text-center text-h5 pb-6"> 用户登录 </v-card-title>
+  <v-container>
+    <v-card flat justify="center">
+      <v-card-title class="text-center text-h5 pb-6">用户登录</v-card-title>
 
-			<v-card-text>
-				<form @submit.prevent="handleLogin">
-					<v-text-field
-						v-model="formData.email"
-						label="邮箱"
-						type="email"
-						:rules="[rules.required, emailValidate]"
-						variant="outlined"
-						class="mb-4" />
+      <v-card-text>
+        <v-form fast-fail @submit.prevent="handleSubmit">
+          <div class="text-subtitle-1 text-medium-emphasis">账户</div>
+          <v-text-field
+            v-model="formData.email"
+            density="compact"
+            placeholder="邮箱或用户名"
+            prepend-inner-icon="mdi-account"
+            :rules="[rules.email]"
+            type="email"
+            variant="outlined"
+          />
 
-					<v-text-field
-						v-model="formData.password"
-						label="密码"
-						type="password"
-						:rules="[requiredValidate]"
-						variant="outlined"
-						class="mb-4" />
+          <div class="text-subtitle-1 text-medium-emphasis">密码</div>
+          <v-text-field
+            v-model="formData.password"
+            :append-inner-icon="pwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
+            class="mb-4"
+            density="compact"
+            placeholder="请输入密码"
+            prepend-inner-icon="mdi-lock"
+            :rules="[rules.password]"
+            :type="pwdVisible ? 'text' : 'password'"
+            variant="outlined"
+            @click:append-inner="pwdVisible = !pwdVisible"
+          />
 
-					<v-btn
-						type="submit"
-						color="primary"
-						block
-						size="large"
-						:loading="isSubmitting"
-						:disabled="!emailValidation.isValid || !passwordValidation.isValid">
-						{{ isSubmitting ? '登录中...' : '登录' }}
-					</v-btn>
-				</form>
-			</v-card-text>
+          <v-btn block color="primary" :loading="isSubmitting" type="submit">
+            登录
+          </v-btn>
+        </v-form>
+      </v-card-text>
 
-			<v-card-actions class="justify-center pt-4">
-				<v-btn to="/register" variant="text" color="primary">
-					还没有账号？立即注册
-				</v-btn>
-			</v-card-actions>
-		</v-card>
-	</v-container>
+      <v-card-actions class="justify-center pt-4">
+        <v-btn color="primary" to="/register" variant="text">
+          还没有账号？立即注册
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-import { requiredValidate, emailValidate } from '@/utils/validators'
+import { useMessageStore } from '@/stores/modules/message'
+import { getMessage } from '@/utils/message'
+import { emailValidate, requiredValidate } from '@/utils/validators'
 
 interface LoginForm {
-	email: string
-	password: string
+  email: string
+  password: string
 }
 
 const formData = reactive<LoginForm>({
-	email: '',
-	password: '',
+  email: '',
+  password: '',
 })
 
-const rules = {
-  email: {
-    required: requiredValidate,
-    email: emailValidate,
-    message: {
-      required: '请输入邮箱',
-      email: '请输入有效的邮箱',
-    },
-  },
-  password: {
-    required: requiredValidate,
-    message: {
-      required: '请输入密码',
-    },
-  },
-}
-
 const isSubmitting = ref(false)
+const pwdVisible = ref(false)
+const messageStore = useMessageStore()
 
-
-// 验证整个表单
-const validateForm = (): boolean => {
+const rules = {
+  email: (value: string): boolean | string => {
+    if (!requiredValidate(value)) return '请输入邮箱'
+    if (!emailValidate(value)) return '请输入正确的邮箱'
+    return true
+  },
+  password: (value: string): boolean | string => {
+    if (!requiredValidate(value)) return '请输入密码'
+    return true
+  },
 }
 
-const handleLogin = async () => {
-	if (!validateForm()) {
-		return
-	}
+function validateForm(): boolean {
+  return Object.entries(rules).every(([key, validateFn]) => {
+    return validateFn(formData[key as keyof LoginForm]) === true
+  })
+}
 
-	isSubmitting.value = true
+async function handleSubmit(): Promise<void> {
+  if (!validateForm()) {
+    return
+  }
 
-	try {
-		// 这里应该是实际的登录逻辑
-		console.log('登录数据:', {
-			email: formData.email,
-			password: formData.password,
-		})
-		await new Promise(resolve => setTimeout(resolve, 1000))
-
-	} catch (error) {
-		console.error('登录失败:', error)
-		// 这里可以显示错误消息给用户
-	} finally {
-		isSubmitting.value = false
-	}
+  isSubmitting.value = true
+  try {
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    const message = getMessage('登录成功', 'success')
+    messageStore.sendMessage(message)
+  } catch (error) {
+    console.error('登录失败:', error)
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>

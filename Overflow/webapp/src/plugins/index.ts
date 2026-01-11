@@ -4,6 +4,8 @@ import pinia from './pinia'
 
 import type { App } from 'vue'
 
+export { vuetify, router, pinia }
+
 export function registerPlugins(app: App) {
-	app.use(vuetify).use(router).use(pinia)
+  app.use(vuetify).use(router).use(pinia)
 }

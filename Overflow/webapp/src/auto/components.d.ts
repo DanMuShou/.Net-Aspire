@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BaseButton: typeof import('./../components/common/BaseButton.vue')['default']
+    GlobalAlert: typeof import('./../components/global/GlobalAlert.vue')['default']
     HelloWorld: typeof import('./../components/HelloWorld.vue')['default']
     IconCommunity: typeof import('./../components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./../components/icons/IconDocumentation.vue')['default']
@@ -20,10 +21,12 @@ declare module 'vue' {
     IconTooling: typeof import('./../components/icons/IconTooling.vue')['default']
     LeftNavigation: typeof import('./../components/common/drawerNav/LeftNavigation.vue')['default']
     LoginButton: typeof import('./../components/common/navigation/LoginButton.vue')['default']
+    MessageInfo: typeof import('./../components/global/MessageInfo.vue')['default']
     RegisterButton: typeof import('./../components/common/navigation/RegisterButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchBar: typeof import('./../components/common/navigation/SearchBar.vue')['default']
+    Snackbar: typeof import('./../components/global/Snackbar.vue')['default']
     ThemeButton: typeof import('./../components/common/navigation/ThemeButton.vue')['default']
     TheWelcome: typeof import('./../components/TheWelcome.vue')['default']
     TopNavigation: typeof import('./../components/common/navigation/TopNavigation.vue')['default']

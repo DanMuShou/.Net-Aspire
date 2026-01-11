@@ -32,14 +32,8 @@ export interface ReactiveData<T> {
 export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>
 
 // 必需属性类型（部分属性必需）
-export type RequiredSome<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>
-
-// 枚举类型定义示例
-export enum UserRole {
-  Admin = 'admin',
-  User = 'user',
-  Guest = 'guest',
-}
+export type RequiredSome<T, K extends keyof T> = Pick<T, K> &
+  Partial<Omit<T, K>>
 
 export enum HttpStatus {
   Success = 200,
