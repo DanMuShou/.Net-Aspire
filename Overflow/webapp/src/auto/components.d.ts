@@ -21,12 +21,18 @@ declare module 'vue' {
     IconTooling: typeof import('./../components/icons/IconTooling.vue')['default']
     LeftNavigation: typeof import('./../components/common/drawerNav/LeftNavigation.vue')['default']
     LoginButton: typeof import('./../components/common/navigation/LoginButton.vue')['default']
+<<<<<<< HEAD
     MessageInfo: typeof import('./../components/global/MessageInfo.vue')['default']
+=======
+>>>>>>> new
     RegisterButton: typeof import('./../components/common/navigation/RegisterButton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchBar: typeof import('./../components/common/navigation/SearchBar.vue')['default']
+<<<<<<< HEAD
     Snackbar: typeof import('./../components/global/Snackbar.vue')['default']
+=======
+>>>>>>> new
     ThemeButton: typeof import('./../components/common/navigation/ThemeButton.vue')['default']
     TheWelcome: typeof import('./../components/TheWelcome.vue')['default']
     TopNavigation: typeof import('./../components/common/navigation/TopNavigation.vue')['default']

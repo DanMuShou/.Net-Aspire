@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using Application.Common.Response;
+using Application.DTO.PostServer.PostQuestions;
+using MediatR;
 
 namespace Application.MediatR.Commands.PostServer.PostQuestions;
 
@@ -8,4 +10,4 @@ public record PostQuestionUpdateCommand(
     string Content,
     List<string> Tags,
     bool HasAcceptedAnswer
-) : IRequest;
+) : IRequest<ServiceResponse<PostQuestionDto>>;

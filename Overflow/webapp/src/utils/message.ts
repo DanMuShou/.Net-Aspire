@@ -1,4 +1,4 @@
-import { AlertMessage, type IAlertMessage } from '@/types/app/alertMessage'
+import { AlertMessage, type IAlertMessage } from '@/types/app/ui/alertMessage'
 
 export const getInfoMessage = (
   message: string,

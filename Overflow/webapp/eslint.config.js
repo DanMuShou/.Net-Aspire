@@ -6,6 +6,7 @@ export default vuetify({
     '@stylistic/space-before-function-paren': 'off',
     '@stylistic/comma-dangle': 'off',
     'vue/script-indent': 'off',
+    'unicorn/no-array-reverse': 'off',
 
     'vue/multi-word-component-names': 'error',
     'vue/component-definition-name-casing': ['error', 'PascalCase'],

@@ -1,12 +1,24 @@
 <template>
   <v-layout>
+<<<<<<< HEAD
     <v-main class="d-flex justify-center align-center">
       <v-container class="elevation-4 rounded-xl" height="80vh" width="60vw">
         <slot name="default" />
+=======
+    <v-main class="d-flex align-center">
+      <v-container
+        class="elevation-10 rounded-xl"
+        height="80vh"
+        max-width="640px"
+        width="60vw"
+      >
+        <slot />
+>>>>>>> new
       </v-container>
     </v-main>
   </v-layout>
 </template>
+<<<<<<< HEAD
 
 <script setup></script>
 
@@ -32,3 +44,5 @@
   border-radius: 8px;
 }
 </style>
+=======
+>>>>>>> new

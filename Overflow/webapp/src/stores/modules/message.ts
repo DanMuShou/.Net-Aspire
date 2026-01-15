@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { AlertMessage, type IAlertMessage } from '@/types/app/alertMessage'
+=======
+import { AlertMessage, type IAlertMessage } from '@/types/app/ui/alertMessage'
+>>>>>>> new
 
 export const useMessageStore = defineStore('messageInfo', () => {
   const index = ref(0)
@@ -11,7 +15,10 @@ export const useMessageStore = defineStore('messageInfo', () => {
   const sendMessage = (message: IAlertMessage) => {
     index.value += 1
     messageInfo.value = message
+<<<<<<< HEAD
     console.log(`消息${index.value}发送成功`)
+=======
+>>>>>>> new
   }
 
   return {
