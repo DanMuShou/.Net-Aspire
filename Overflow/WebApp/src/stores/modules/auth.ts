@@ -1,56 +1,71 @@
 // 认证状态管理模块
-import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-import { userApi } from "@/api/modules/user";
-import type { User } from "../../types/api/user";
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { authApi } from '@/api/modules/keycloak/auth';
+import type { User } from '@/types/api/keycloak/user';
+import { useMessageStore } from './message';
+import { getErrorMessage } from '@/utils/message';
+import { fa } from 'zod/locales';
+
+const messageStore = useMessageStore();
 
 export const useAuthStore = defineStore(
-  "auth",
+  'auth',
   () => {
-    const user = ref<User | null>(null);
-    const token = ref<string | null>(null);
-    const refreshToken = ref<string | null>(null);
+    const user = ref<User | undefined>(undefined);
+    const token = ref<string | undefined>(undefined);
+    const refreshToken = ref<string | undefined>(undefined);
 
     const isAuthenticated = computed(() => !!token.value);
     const hasRole = (role: string) => {
       return true;
     };
 
-    // 操作
-    const login = async (credentials: {
-      username: string;
-      password: string;
-    }) => {
+    const login = async (username: string, password: string): Promise<void> => {
       try {
-        const response = await userApi.login(credentials);
+        const response = await authApi.login(username, password);
         token.value = response.token;
-        return response;
+        refreshToken.value = response.refreshToken;
       } catch (error) {
-        console.error("登录失败: ", error);
+        messageStore.sendMessage(getErrorMessage('登录失败'));
         throw error;
       }
     };
 
-    const logout = async () => {
+    const refresh = async (): Promise<boolean> => {
       try {
-        await userApi.logout();
+        if (!refreshToken.value) return false;
+
+        const response = await authApi.refresh(refreshToken.value!);
+        token.value = response.token;
+        refreshToken.value = response.refreshToken;
+        return true;
       } catch (error) {
-        console.error("退出失败: ", error);
-      } finally {
-        token.value = null;
-        refreshToken.value = null;
-        user.value = null;
+        messageStore.sendMessage(getErrorMessage('认证失败, 请重新登录.'));
+        return false;
       }
     };
 
-    const fetchUserInfo = async () => {
+    const fetchUserInfo = async (): Promise<void> => {
       try {
-        const userInfo = await userApi.getUserInfo();
+        const userInfo = await authApi.getUserInfo();
         user.value = userInfo;
-        return userInfo;
       } catch (error) {
-        console.error("获得用户信息失败: ", error);
+        messageStore.sendMessage(getErrorMessage('获得用户信息失败'));
         throw error;
+      }
+    };
+
+    const logout = async (): Promise<void> => {
+      try {
+        await authApi.logout();
+      } catch (error) {
+        messageStore.sendMessage(getErrorMessage('登出失败'));
+        throw error;
+      } finally {
+        token.value = undefined;
+        refreshToken.value = undefined;
+        user.value = undefined;
       }
     };
 
@@ -59,7 +74,7 @@ export const useAuthStore = defineStore(
         try {
           await fetchUserInfo();
         } catch (error) {
-          console.warn("Token 可能已失效，执行登出操作");
+          console.warn('Token 可能已失效，执行登出操作');
           await logout();
         }
       }
@@ -79,9 +94,9 @@ export const useAuthStore = defineStore(
   },
   {
     persist: {
-      key: "auth",
+      key: 'auth',
       storage: localStorage,
-      pick: ["token", "refreshToken"],
+      pick: ['token', 'refreshToken'],
     },
   }
 );

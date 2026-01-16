@@ -58,31 +58,31 @@
 </template>
 
 <script setup lang="ts">
-import type { VForm } from 'vuetify/components'
-import FocusLayout from '@/layouts/FocusLayout.vue'
-import { useMessageStore } from '@/stores/modules/message'
-import { zodValidator } from '@/types/app/settings/validation'
-import { getMessage } from '@/utils/message'
+import type { VForm } from 'vuetify/components';
+import FocusLayout from '@/layouts/FocusLayout.vue';
+import { useMessageStore } from '@/stores/modules/message';
+import { zodValidator } from '@/types/app/settings/validation';
+import { getMessage } from '@/utils/message';
 import {
   createRules,
   emailValidate,
   requiredValidate,
-} from '@/utils/validators'
+} from '@/utils/validators';
 
 interface LoginForm {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 const formData = reactive<LoginForm>({
   email: '',
   password: '',
-})
+});
 
-const formRef = ref<VForm>()
-const isSubmitting = ref(false)
-const pwdVisible = ref(false)
-const messageStore = useMessageStore()
+const formRef = ref<VForm>();
+const isSubmitting = ref(false);
+const pwdVisible = ref(false);
+const messageStore = useMessageStore();
 
 const rules = {
   email: createRules(
@@ -93,23 +93,22 @@ const rules = {
     new zodValidator(requiredValidate(), '请输入密码'),
     new zodValidator(emailValidate(), '请输入正确的邮箱')
   ),
-}
+};
 
 async function handleSubmit(): Promise<void> {
-  const validationResult = await formRef.value?.validate()
+  const validationResult = await formRef.value?.validate();
   if (!validationResult || !validationResult.valid) {
-    return
+    return;
   }
 
-  isSubmitting.value = true
+  isSubmitting.value = true;
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    const message = getMessage('登录成功', 'success')
-    messageStore.sendMessage(message)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    messageStore.sendMessage(getMessage('登录成功', 'success'));
   } catch (error) {
-    messageStore.sendMessage(getMessage(`登录失败: ${error}`, 'error'))
+    messageStore.sendMessage(getMessage(`登录失败: ${error}`, 'error'));
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
 }
 </script>

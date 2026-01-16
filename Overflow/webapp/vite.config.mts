@@ -1,5 +1,5 @@
 // Plugins
-import autoImport from "unplugin-auto-import/vite";
+import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import Vue from "@vitejs/plugin-vue";
 import Vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
@@ -13,12 +13,15 @@ import { fileURLToPath, URL } from "node:url";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    autoImport({
+    AutoImport({
       imports: ["vue", "vue-router", "pinia"],
       dts: "src/auto/auto-imports.d.ts",
     }),
     VueRouter({
       dts: "src/auto/typed-router.d.ts",
+    }),
+    Components({
+      dts: "src/auto/components.d.ts",
     }),
     Vue({
       template: { transformAssetUrls },
@@ -29,9 +32,6 @@ export default defineConfig({
       styles: {
         configFile: "src/styles/settings.scss",
       },
-    }),
-    Components({
-      dts: "src/auto/components.d.ts",
     }),
     Fonts({
       fontsource: {

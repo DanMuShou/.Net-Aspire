@@ -5,8 +5,9 @@ export enum UserRole {
 }
 
 export interface User {
-  id: number
-  username: string
+  id: string
+  name: string
   email: string
-  createdAt: string
+  roles: UserRole[]
+  createdAt?: string
 }

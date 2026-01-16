@@ -4,7 +4,7 @@
       <v-container
         class="elevation-10 rounded-xl"
         height="80vh"
-        max-width="640px"
+        max-width="480px"
         width="60vw"
       >
         <slot />
