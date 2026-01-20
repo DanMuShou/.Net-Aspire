@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
 const teamMembers = ref([
-  { name: '开发团队', role: '开发者' },
-  { name: '设计团队', role: 'UI/UX设计师' },
-  { name: '测试团队', role: 'QA工程师' },
-])
+  { name: "开发团队", role: "开发者" },
+  { name: "设计团队", role: "UI/UX设计师" },
+  { name: "测试团队", role: "QA工程师" },
+]);
 </script>
 
 <template>

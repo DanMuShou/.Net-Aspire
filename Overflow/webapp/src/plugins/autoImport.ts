@@ -1,6 +1,6 @@
-import autoImport from 'unplugin-auto-import/vite'
+import autoImport from "unplugin-auto-import/vite";
 
 export default autoImport({
-	imports: ['vue', 'vue-router', 'pinia'],
-	dts: true,
-})
+  imports: ["vue", "vue-router", "pinia"],
+  dts: true,
+});

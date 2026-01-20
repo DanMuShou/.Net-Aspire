@@ -9,7 +9,9 @@
     </template>
     <v-list>
       <v-list-item>
-        <v-list-item-title>{{ authStore.user?.name || authStore.user?.username }}</v-list-item-title>
+        <v-list-item-title>{{
+          authStore.user?.name || authStore.user?.username
+        }}</v-list-item-title>
         <v-list-item-subtitle>{{ authStore.user?.email }}</v-list-item-subtitle>
       </v-list-item>
       <v-divider></v-divider>
@@ -21,26 +23,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../../stores'
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../../stores";
 
-const router = useRouter()
-const authStore = useAuthStore()
+const router = useRouter();
+const authStore = useAuthStore();
 
 const getUserInitials = computed(() => {
   if (authStore.user?.name) {
-    return authStore.user.name.charAt(0).toUpperCase()
+    return authStore.user.name.charAt(0).toUpperCase();
   } else if (authStore.user?.username) {
-    return authStore.user.username.charAt(0).toUpperCase()
+    return authStore.user.username.charAt(0).toUpperCase();
   }
-  return '?'
-})
+  return "?";
+});
 
 const logout = () => {
-  authStore.logout()
-  router.push('/login')
-}
+  authStore.logout();
+  router.push("/login");
+};
 </script>
 
 <style></style>

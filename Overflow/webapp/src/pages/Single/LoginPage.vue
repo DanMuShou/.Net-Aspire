@@ -39,7 +39,7 @@
             :rules="rules.password"
             :type="pwdVisible ? 'text' : 'password'"
             variant="outlined"
-            @click:append-inner="pwdVisible = !pwdVisible"
+            @click:append-inner="togglePasswordVisibility"
           />
 
           <v-btn block color="primary" :loading="isSubmitting" type="submit">
@@ -58,16 +58,16 @@
 </template>
 
 <script setup lang="ts">
-import type { VForm } from 'vuetify/components';
-import FocusLayout from '@/layouts/FocusLayout.vue';
-import { useMessageStore } from '@/stores/modules/message';
-import { zodValidator } from '@/types/app/settings/validation';
-import { getMessage } from '@/utils/message';
+import type { VForm } from "vuetify/components";
+import FocusLayout from "@/layouts/FocusLayout.vue";
+import { useMessageStore } from "@/stores/modules/message";
+import { zodValidator } from "@/types/app/settings/validation";
+import { getMessage } from "@/utils/message";
 import {
   createRules,
   emailValidate,
   requiredValidate,
-} from '@/utils/validators';
+} from "@/utils/validators";
 
 interface LoginForm {
   email: string;
@@ -75,8 +75,8 @@ interface LoginForm {
 }
 
 const formData = reactive<LoginForm>({
-  email: '',
-  password: '',
+  email: "",
+  password: "",
 });
 
 const formRef = ref<VForm>();
@@ -86,12 +86,12 @@ const messageStore = useMessageStore();
 
 const rules = {
   email: createRules(
-    new zodValidator(requiredValidate(), '请输入邮箱'),
-    new zodValidator(emailValidate(), '请输入正确的邮箱')
+    new zodValidator(requiredValidate(), "请输入邮箱"),
+    new zodValidator(emailValidate(), "请输入正确的邮箱")
   ),
   password: createRules(
-    new zodValidator(requiredValidate(), '请输入密码'),
-    new zodValidator(emailValidate(), '请输入正确的邮箱')
+    new zodValidator(requiredValidate(), "请输入密码"),
+    new zodValidator(emailValidate(), "请输入正确的邮箱")
   ),
 };
 
@@ -104,11 +104,15 @@ async function handleSubmit(): Promise<void> {
   isSubmitting.value = true;
   try {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    messageStore.sendMessage(getMessage('登录成功', 'success'));
+    messageStore.sendMessage(getMessage("登录成功", "success"));
   } catch (error) {
-    messageStore.sendMessage(getMessage(`登录失败: ${error}`, 'error'));
+    messageStore.sendMessage(getMessage(`登录失败: ${error}`, "error"));
   } finally {
     isSubmitting.value = false;
   }
+}
+
+async function togglePasswordVisibility(): Promise<void> {
+  pwdVisible.value = !pwdVisible.value;
 }
 </script>

@@ -45,42 +45,42 @@
   </v-navigation-drawer>
 </template>
 <script setup>
-import { useAuthStore } from '@/stores'
+import { useAuthStore } from "@/stores";
 
-const drawer = ref(true)
-const rail = ref(true)
+const drawer = ref(true);
+const rail = ref(true);
 
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
 const userIcon = computed(() => {
   if (authStore.user) {
-    return 'mdi-account'
+    return "mdi-account";
   } else {
-    return 'mdi-account-off'
+    return "mdi-account-off";
   }
-})
+});
 
 const userName = computed(() => {
   if (authStore.user) {
-    return authStore.user.username
+    return authStore.user.username;
   } else {
-    return '未登录'
+    return "未登录";
   }
-})
+});
 
 const userEmail = computed(() => {
   if (authStore.user) {
-    return authStore.user.email
+    return authStore.user.email;
   } else {
-    return ''
+    return "";
   }
-})
+});
 
 const handleUserClick = () => {
   if (!authStore.user) {
-    console.log('未登录')
+    console.log("未登录");
   } else {
-    console.log('已登录')
+    console.log("已登录");
   }
-}
+};
 </script>
