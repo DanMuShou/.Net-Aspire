@@ -1,62 +1,41 @@
-import { UserRole } from '@/types/api/keycloak/user'
-<<<<<<< HEAD
-import { Layouts } from './layout'
-
-export interface IRouteMeta {
-  title: string
-  layout: Layouts
-=======
+import type { UserRoleType } from "@/types/api/keycloak/user";
+import type { LayoutType } from "@/types/app/settings/layout";
+import { Layout } from "@/types/app/settings/layout";
 
 export interface RouteInfoInterface {
-  title: string
->>>>>>> new
-  icon?: string
-  auth?: boolean
-  roles?: UserRole[]
+  title: string;
+  icon?: string;
+  auth?: boolean;
+  roles?: UserRoleType[];
+  layout?: LayoutType;
 }
 
-<<<<<<< HEAD
-export class RouteMeta implements IRouteMeta {
-  title: string
-  layout: Layouts
-=======
 export class RouteInfo implements RouteInfoInterface {
-  title: string
->>>>>>> new
-  icon?: string
-  auth?: boolean
-  roles?: UserRole[]
+  title: string;
+  icon?: string;
+  auth?: boolean;
+  roles?: UserRoleType[];
+  layout?: LayoutType;
 
   constructor(
     title: string,
-<<<<<<< HEAD
-    layout: Layouts = Layouts.workbenchLayout,
-=======
->>>>>>> new
+    layout: LayoutType,
     icon?: string,
     auth?: boolean,
-    roles?: UserRole[]
+    roles?: UserRoleType[],
   ) {
-    this.title = title
-<<<<<<< HEAD
-    this.layout = layout
-=======
->>>>>>> new
-    this.icon = icon
-    this.auth = auth
-    this.roles = roles
+    this.title = title;
+    this.layout = layout;
+    this.icon = icon;
+    this.auth = auth;
+    this.roles = roles;
   }
 }
 
-<<<<<<< HEAD
-export const emptyRouteMeta: IRouteMeta = new RouteMeta(
-  '',
-  Layouts._,
-=======
 export const emptyRouteMeta: RouteInfoInterface = new RouteInfo(
-  '',
->>>>>>> new
-  '',
+  "",
+  Layout.workbench,
+  "",
   false,
-  []
-)
+  [],
+);

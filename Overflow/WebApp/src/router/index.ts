@@ -10,7 +10,7 @@ const router = createRouter({
     {
       path: "/:pathMatch(.*)*",
       name: "NotFound",
-      component: () => import("@/pages/Single/NotFoundPage.vue"),
+      component: (): Promise<unknown> => import("@/pages/Single/NotFoundPage.vue"),
     },
   ],
 });

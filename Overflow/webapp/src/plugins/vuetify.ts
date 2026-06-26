@@ -1,10 +1,10 @@
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
+import "@mdi/font/css/materialdesignicons.css";
+import "vuetify/styles";
 
-import { createVuetify } from 'vuetify'
+import { createVuetify } from "vuetify";
 
 export default createVuetify({
-	theme: {
-		defaultTheme: 'system',
-	},
-})
+  theme: {
+    defaultTheme: "system",
+  },
+});

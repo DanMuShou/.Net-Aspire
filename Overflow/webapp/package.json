@@ -1,5 +1,5 @@
 {
-  "name": "webapp",
+  "name": "webapp4",
   "private": true,
   "type": "module",
   "version": "0.0.0",
@@ -15,16 +15,14 @@
     "@eslint/js": "^9.39.2",
     "@fontsource/roboto": "5.2.7",
     "@mdi/font": "7.4.47",
-    "@typescript-eslint/eslint-plugin": "^8.51.0",
-    "@typescript-eslint/parser": "^8.51.0",
     "axios": "^1.13.2",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
-    "unplugin-auto-import": "^20.3.0",
+    "unplugin-auto-import": "^21.0.0",
     "vue": "^3.5.21",
-    "vue-router": "^4.5.1",
+    "vue-router": "^4.6.4",
     "vuetify": "^3.10.1",
-    "zod": "^4.3.4"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",

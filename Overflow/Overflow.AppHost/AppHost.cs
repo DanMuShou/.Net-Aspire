@@ -5,9 +5,9 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var compose = builder
-    .AddDockerComposeEnvironment("production")
-    .WithDashboard(dashboard => dashboard.WithHostPort(8080).WithForwardedHeaders(enabled: true));
+// var compose = builder
+//     .AddDockerComposeEnvironment("production")
+//     .WithDashboard(dashboard => dashboard.WithHostPort(8080).WithForwardedHeaders(enabled: true));
 
 #region Keycloak
 
@@ -17,8 +17,7 @@ var keycloak = builder
     .WithDataVolume("keycloak-data")
     .WithoutHttpsCertificate()
     .WithEnvironment("KC_HTTP_ENABLED", "true")
-    .WithEnvironment("KC_HOSTNAME_STRICT", "false")
-    .WithEndpoint(6001, 8080, "keycloak", isExternal: true);
+    .WithEnvironment("KC_HOSTNAME_STRICT", "false");
 #pragma warning restore ASPIRECERTIFICATES001 // 类型仅用于评估，在将来的更新中可能会被更改或删除。取消此诊断以继续。
 
 #endregion
@@ -46,7 +45,6 @@ var typesenseContainer = typesense.GetEndpoint("typesense");
 #endregion
 
 #region Rabbitmq
-
 var rabbitmq = builder
     .AddRabbitMQ("messaging")
     .WithDataVolume("rabbitmq-data")
@@ -102,10 +100,10 @@ var yarp = builder
 
 #region Web
 
-var webApp = builder
-    .AddJavaScriptApp("webapp", "../WebApp")
-    .WithReference(keycloak)
-    .WithHttpEndpoint(env: "PORT", port: 3000);
+// var webApp = builder
+//     .AddJavaScriptApp("webapp", "../WebApp")
+//     .WithReference(keycloak)
+//     .WithHttpEndpoint(env: "PORT", port: 3000);
 
 #endregion
 

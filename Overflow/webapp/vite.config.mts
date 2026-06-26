@@ -1,24 +1,19 @@
-// Plugins
-import autoImport from "unplugin-auto-import/vite";
-import Components from "unplugin-vue-components/vite";
+import { fileURLToPath, URL } from "node:url";
 import Vue from "@vitejs/plugin-vue";
-import Vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 import Fonts from "unplugin-fonts/vite";
+import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
 import VueRouter from "unplugin-vue-router/vite";
 
 // Utilities
 import { defineConfig } from "vite";
-import { fileURLToPath, URL } from "node:url";
+import Vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    autoImport({
-      imports: ["vue", "vue-router", "pinia"],
-      dts: "src/auto/auto-imports.d.ts",
-    }),
     VueRouter({
-      dts: "src/auto/typed-router.d.ts",
+      dts: "src/types/auto/typed-router.d.ts",
     }),
     Vue({
       template: { transformAssetUrls },
@@ -31,7 +26,11 @@ export default defineConfig({
       },
     }),
     Components({
-      dts: "src/auto/components.d.ts",
+      dts: "src/types/auto/components.d.ts",
+    }),
+    AutoImport({
+      imports: ["vue", "vue-router", "pinia"],
+      dts: "src/types/auto/auto-imports.d.ts",
     }),
     Fonts({
       fontsource: {

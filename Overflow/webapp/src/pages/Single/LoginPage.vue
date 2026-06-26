@@ -42,74 +42,70 @@
             @click:append-inner="pwdVisible = !pwdVisible"
           />
 
-          <v-btn block color="primary" :loading="isSubmitting" type="submit">
-            登录
-          </v-btn>
+          <v-btn block color="primary" :loading="isSubmitting" type="submit"> 登录 </v-btn>
         </v-form>
       </v-card-text>
 
       <v-card-actions class="justify-center">
-        <v-btn color="primary" to="/register" variant="text">
-          还没有账号？立即注册
-        </v-btn>
+        <v-btn color="primary" to="/register" variant="text"> 还没有账号？立即注册 </v-btn>
       </v-card-actions>
     </v-card>
   </FocusLayout>
 </template>
 
 <script setup lang="ts">
-import type { VForm } from 'vuetify/components'
-import FocusLayout from '@/layouts/FocusLayout.vue'
-import { useMessageStore } from '@/stores/modules/message'
-import { zodValidator } from '@/types/app/settings/validation'
-import { getMessage } from '@/utils/message'
-import {
-  createRules,
-  emailValidate,
-  requiredValidate,
-} from '@/utils/validators'
+import type { VForm } from "vuetify/components";
+import FocusLayout from "@/layouts/FocusLayout.vue";
+import { useMessageStore } from "@/stores/modules/message";
+import { zodValidator } from "@/types/app/settings/validation";
+import { getErrorMessage, getSuccessMessage } from "@/utils/message";
+import { createRules, emailValidate, requiredValidate } from "@/utils/validators";
+import { useAuthStore } from "@/stores";
 
 interface LoginForm {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 const formData = reactive<LoginForm>({
-  email: '',
-  password: '',
-})
+  email: "",
+  password: "",
+});
 
-const formRef = ref<VForm>()
-const isSubmitting = ref(false)
-const pwdVisible = ref(false)
-const messageStore = useMessageStore()
+const formRef = ref<VForm>();
+const isSubmitting = ref(false);
+const pwdVisible = ref(false);
+const router = useRouter();
+const messageStore = useMessageStore();
+const authStore = useAuthStore();
 
 const rules = {
   email: createRules(
-    new zodValidator(requiredValidate(), '请输入邮箱'),
-    new zodValidator(emailValidate(), '请输入正确的邮箱')
+    new zodValidator(requiredValidate(), "请输入邮箱"),
+    new zodValidator(emailValidate(), "请输入正确的邮箱"),
   ),
-  password: createRules(
-    new zodValidator(requiredValidate(), '请输入密码'),
-    new zodValidator(emailValidate(), '请输入正确的邮箱')
-  ),
-}
+  password: createRules(new zodValidator(requiredValidate(), "请输入密码")),
+};
 
 async function handleSubmit(): Promise<void> {
-  const validationResult = await formRef.value?.validate()
+  const validationResult = await formRef.value?.validate();
   if (!validationResult || !validationResult.valid) {
-    return
+    messageStore.sendMessage(getErrorMessage("请检查输入信息"));
+    return;
   }
 
-  isSubmitting.value = true
+  isSubmitting.value = true;
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    const message = getMessage('登录成功', 'success')
-    messageStore.sendMessage(message)
+    await authStore.login({
+      username: formData.email,
+      password: formData.password,
+    });
+    messageStore.sendMessage(getSuccessMessage("登录成功"));
+    router.push("/");
   } catch (error) {
-    messageStore.sendMessage(getMessage(`登录失败: ${error}`, 'error'))
+    messageStore.sendMessage(getErrorMessage(`登录失败: ${error}`));
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
 }
 </script>

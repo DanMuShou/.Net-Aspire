@@ -1,8 +1,7 @@
-// 认证状态管理模块
+import type { User } from "@/types/api/keycloak/user";
+
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
 import { userApi } from "@/api/modules/user";
-import type { User } from "../../types/api/user";
 
 export const useAuthStore = defineStore(
   "auth",
@@ -12,30 +11,27 @@ export const useAuthStore = defineStore(
     const refreshToken = ref<string | null>(null);
 
     const isAuthenticated = computed(() => !!token.value);
-    const hasRole = (role: string) => {
+    const hasRole = (role: string[]): boolean => {
       return true;
     };
 
     // 操作
-    const login = async (credentials: {
-      username: string;
-      password: string;
-    }) => {
+    const login = async (credentials: { username: string; password: string }): Promise<void> => {
       try {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
         const response = await userApi.login(credentials);
         token.value = response.token;
-        return response;
       } catch (error) {
-        console.error("登录失败: ", error);
+        console.error("登录失败:", error);
         throw error;
       }
     };
 
-    const logout = async () => {
+    const logout = async (): Promise<void> => {
       try {
         await userApi.logout();
       } catch (error) {
-        console.error("退出失败: ", error);
+        console.error("退出失败:", error);
       } finally {
         token.value = null;
         refreshToken.value = null;
@@ -43,22 +39,21 @@ export const useAuthStore = defineStore(
       }
     };
 
-    const fetchUserInfo = async () => {
+    const fetchUserInfo = async (): Promise<void> => {
       try {
         const userInfo = await userApi.getUserInfo();
         user.value = userInfo;
-        return userInfo;
       } catch (error) {
-        console.error("获得用户信息失败: ", error);
+        console.error("获得用户信息失败:", error);
         throw error;
       }
     };
 
-    const init = async () => {
+    const init = async (): Promise<void> => {
       if (token.value) {
         try {
           await fetchUserInfo();
-        } catch (error) {
+        } catch {
           console.warn("Token 可能已失效，执行登出操作");
           await logout();
         }
@@ -83,5 +78,5 @@ export const useAuthStore = defineStore(
       storage: localStorage,
       pick: ["token", "refreshToken"],
     },
-  }
+  },
 );

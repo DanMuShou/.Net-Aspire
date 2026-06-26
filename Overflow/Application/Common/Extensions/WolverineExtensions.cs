@@ -20,7 +20,6 @@ public static class WolverineExtensions
         Action<WolverineOptions> configureMessaging
     )
     {
-        {
             var retryPolicy = Policy
                 .Handle<BrokerUnreachableException>()
                 .Or<SocketException>()
@@ -73,6 +72,5 @@ public static class WolverineExtensions
                     .DeclareExchange(TypesenseSchemaName.PostQuestionSchema);
                 configureMessaging(options);
             });
-        }
     }
 }

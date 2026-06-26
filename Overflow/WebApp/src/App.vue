@@ -6,5 +6,5 @@
 </template>
 
 <script setup>
-import GlobalAlert from '@/components/global/GlobalAlert.vue'
+import GlobalAlert from "@/components/global/GlobalAlert.vue";
 </script>

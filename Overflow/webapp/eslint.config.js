@@ -1,33 +1,26 @@
-import vuetify from 'eslint-config-vuetify'
+import eslint from "@eslint/js";
+import vuetify from "eslint-config-vuetify";
 
 export default vuetify({
   rules: {
-    // Vue特定规则
-    '@stylistic/space-before-function-paren': 'off',
-    '@stylistic/comma-dangle': 'off',
-    'vue/script-indent': 'off',
-    'unicorn/no-array-reverse': 'off',
+    // ...eslint.configs.recommended.rules,
 
-    'vue/multi-word-component-names': 'error',
-    'vue/component-definition-name-casing': ['error', 'PascalCase'],
-    'vue/component-name-in-template-casing': ['error', 'PascalCase'],
-    'vue/html-self-closing': [
-      'error',
-      {
-        html: {
-          void: 'never',
-          normal: 'always',
-          component: 'always',
-        },
-      },
-    ],
+    "@stylistic/semi": "off",
+    "@stylistic/quotes": "off",
+    "@stylistic/member-delimiter-style": "off",
+    "@stylistic/operator-linebreak": "off",
+    "@stylistic/arrow-parens": "off",
+    "@stylistic/space-before-function-paren": "off",
 
-    // TypeScript规则
-    '@typescript-eslint/no-unused-vars': 'error',
-    '@typescript-eslint/explicit-function-return-type': 'warn',
+    "vue/script-indent": "off",
 
-    // 通用规则
-    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/explicit-function-return-type": "error",
+
+    "no-undef": "off",
+    "no-unused-vars": "warn",
+    "perfectionist/sort-imports": "off",
   },
-})
+});

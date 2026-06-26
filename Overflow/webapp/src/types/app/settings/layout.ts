@@ -1,6 +1,7 @@
-export enum Layouts {
-  workbenchLayout = '@/layouts/workbenchLayout.vue',
-  mainLayout = '@/layouts/mainLayout.vue',
-  focusLayout = '@/layouts/focusLayout.vue',
-  _ = '',
-}
+export const Layout = {
+  focus: "focus",
+  workbench: "workbench",
+  none: "none",
+} as const;
+
+export type LayoutType = (typeof Layout)[keyof typeof Layout];
